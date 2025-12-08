@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AnDevMarketList">
         <activity
+            android:name=".pantalla_menu"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
