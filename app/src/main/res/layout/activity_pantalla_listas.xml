@@ -94,7 +94,7 @@
             android:background="@color/white"/>
 
         <Button
-            android:id="@+id/btnGuardar"
+            android:id="@+id/button_guardar"
             android:layout_width="140dp"
             android:layout_height="50dp"
             android:text="Guardar"
