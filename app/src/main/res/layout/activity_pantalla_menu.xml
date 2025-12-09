@@ -19,8 +19,7 @@
         android:background="#F3DFA2"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        >
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:id="@+id/tituloApp"
@@ -30,16 +29,15 @@
             android:gravity="center"
             android:text="MarkTL"
             android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <ImageView
             android:id="@+id/iconoCampana"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:contentDescription="Notificacion"
-            android:src="@drawable/notification_bell_svgrepo_com" />
+            android:src="@drawable/notification_bell_svgrepo_com"/>
     </LinearLayout>
-
 
     <GridLayout
         android:id="@+id/gridListas"
@@ -55,57 +53,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_columnWeight="1"
             android:background="#F3A5A0"
-            android:orientation="vertical" />
-
+            android:orientation="vertical"/>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_columnWeight="1"
             android:background="#F7E3A1"
-            android:orientation="vertical" />
-
+            android:orientation="vertical"/>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_columnWeight="1"
             android:background="#F3A5A0"
-            android:orientation="vertical" />
-
+            android:orientation="vertical"/>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_columnWeight="1"
             android:background="#A8D59E"
-            android:orientation="vertical" />
-
+            android:orientation="vertical"/>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_columnWeight="1"
             android:background="#F7E3A1"
-            android:orientation="vertical" />
-
+            android:orientation="vertical"/>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_columnWeight="1"
             android:background="#A8D59E"
-            android:orientation="vertical" />
-
+            android:orientation="vertical"/>
     </GridLayout>
-
-
 
     <ImageButton
         android:id="@+id/botonAdd"
@@ -116,9 +105,7 @@
         android:elevation="6dp"
         android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar" />
-
-
+        app:layout_constraintBottom_toTopOf="@id/bottomBar"/>
 
     <LinearLayout
         android:id="@+id/bottomBar"
@@ -136,23 +123,18 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_weight="1"
-            android:src="@drawable/calender_svgrepo_com" />
+            android:src="@drawable/calender_svgrepo_com"/>
 
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_weight="1"
-            android:src="@drawable/home_svgrepo_com" />
+            android:src="@drawable/home_svgrepo_com"/>
 
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_weight="1"
-            android:src="@drawable/alarm_clock_svgrepo_com" />
-
-
+            android:src="@drawable/alarm_clock_svgrepo_com"/>
     </LinearLayout>
-
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
