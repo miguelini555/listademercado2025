@@ -55,7 +55,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- TARJETA 1 -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
@@ -63,7 +63,7 @@
             android:background="#F3A5A0"
             android:orientation="vertical" />
 
-        <!-- TARJETA 2 -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
@@ -71,7 +71,7 @@
             android:background="#F7E3A1"
             android:orientation="vertical" />
 
-        <!-- TARJETA 3 -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
@@ -79,7 +79,7 @@
             android:background="#F3A5A0"
             android:orientation="vertical" />
 
-        <!-- TARJETA 4 -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
@@ -87,7 +87,7 @@
             android:background="#A8D59E"
             android:orientation="vertical" />
 
-        <!-- TARJETA 5 -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
@@ -95,7 +95,7 @@
             android:background="#F7E3A1"
             android:orientation="vertical" />
 
-        <!-- TARJETA 6 -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
@@ -106,7 +106,7 @@
     </GridLayout>
 
 
-    <!-- BOTÓN FLOTANTE -->
+
     <ImageButton
         android:id="@+id/botonAdd"
         android:layout_width="60dp"
@@ -119,7 +119,7 @@
         app:layout_constraintBottom_toTopOf="@id/bottomBar" />
 
 
-    <!-- MENÚ INFERIOR -->
+
     <LinearLayout
         android:id="@+id/bottomBar"
         android:layout_width="0dp"
