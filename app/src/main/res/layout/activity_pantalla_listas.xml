@@ -70,10 +70,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center"
+            android:layout_gravity="center"
             android:layout_marginTop="20dp">
 
             <Button
@@ -89,6 +89,7 @@
             android:id="@+id/button_prioridad"
             android:layout_width="220dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="Prioridad"
             android:layout_marginTop="20dp"
             android:background="@color/white"/>
