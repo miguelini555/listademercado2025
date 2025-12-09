@@ -32,10 +32,12 @@
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/iconoCampana"
+        <ImageButton
+            android:id="@+id/botonCampana"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:background="@android:color/transparent"
+            android:padding="6dp"
             android:contentDescription="Notificacion"
             android:src="@drawable/notification_bell_svgrepo_com" />
     </LinearLayout>
@@ -132,22 +134,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/botonCalendario"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:padding="6dp"
             android:src="@drawable/calender_svgrepo_com" />
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/botonInicio"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:padding="6dp"
             android:src="@drawable/home_svgrepo_com" />
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/botonAlarma"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:padding="6dp"
             android:src="@drawable/alarm_clock_svgrepo_com" />
 
 
