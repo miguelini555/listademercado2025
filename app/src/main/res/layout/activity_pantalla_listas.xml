@@ -79,7 +79,9 @@
                 android:id="@+id/button_fecha"
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:textColor="@android:color/black"
+                android:backgroundTint="@android:color/white"
+
                 android:text="Fecha Limite"/>
         </LinearLayout>
 
@@ -90,14 +92,16 @@
             android:layout_gravity="center"
             android:text="Prioridad"
             android:layout_marginTop="20dp"
-            android:background="@color/white"/>
+            android:textColor="@android:color/black"
+            android:backgroundTint="@android:color/white"/>
 
         <Button
             android:id="@+id/button_guardar"
             android:layout_width="140dp"
-            android:layout_height="50dp"
+            android:layout_height="50dp"            android:background="@color/white"
+            android:textColor="@android:color/black"
+            android:backgroundTint="@android:color/white"
             android:text="Guardar"
-            android:background="@color/white"
             android:layout_marginTop="30dp"
             android:layout_gravity="center"/>
     </LinearLayout>
@@ -109,30 +113,37 @@
         android:orientation="horizontal"
         android:background="#F3DFA2"
         android:gravity="center"
+        android:weightSum="3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/botonCalendario"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_weight="1"
-            android:clickable="true"
-            android:src="@drawable/calender_svgrepo_com" />
+            android:background="@android:color/transparent"
+            android:padding="6dp"
+            android:src="@drawable/calender_svgrepo_com"/>
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/botonInicio"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_weight="1"
-            android:clickable="true"
-            android:src="@drawable/home_svgrepo_com" />
+            android:background="@android:color/transparent"
+            android:padding="6dp"
+            android:src="@drawable/home_svgrepo_com"/>
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/botonAlarma"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_weight="1"
-            android:clickable="true"
-            android:src="@drawable/alarm_clock_svgrepo_com" />
+            android:background="@android:color/transparent"
+            android:padding="6dp"
+            android:src="@drawable/alarm_clock_svgrepo_com"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -34,5 +34,10 @@ class pantalla_menu : AppCompatActivity() {
             val intent = Intent(this, pantalla_menu::class.java)
             startActivity(intent)
         }
+
+        botonAgregar.setOnClickListener {
+            val intent = Intent(this, PantallaListasActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
