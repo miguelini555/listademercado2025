@@ -2,7 +2,6 @@ package com.example.andevmarketlist
 
 import android.content.Intent
 import android.os.Bundle
-import android.ImageButton
 import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +24,11 @@ class pantalla_menu : AppCompatActivity() {
         val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
         val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
         val botonAgregar = findViewById<ImageButton>(R.id.botonAgregar)
+
+        btnCalendario.setOnClickListener {
+            val intent = Intent(this, activity_Calendario::class.java)
+            startActivity(intent)
+        }
 
         botonInicio.setOnClickListener {
             val intent = Intent(this, pantalla_menu::class.java)
