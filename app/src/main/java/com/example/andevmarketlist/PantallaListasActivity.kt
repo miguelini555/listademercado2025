@@ -1,5 +1,7 @@
 package com.example.andevmarketlist
 
+import android.app.DatePickerDialog
+import java.util.Calendar
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -15,6 +17,28 @@ class PantallaListasActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_pantalla_listas)
+
+        val botonFecha = findViewById<Button>(R.id.button_fecha)
+
+        botonFecha.setOnClickListener {
+            val calendario = Calendar.getInstance()
+            val anio = calendario.get(Calendar.YEAR)
+            val mes = calendario.get(Calendar.MONTH)
+            val dia = calendario.get(Calendar.DAY_OF_MONTH)
+
+            val datePicker = DatePickerDialog(
+                this,
+                { _, year, month, dayOfMonth ->
+                    val mesReal = month + 1
+                    val fechaSeleccionada = "%02d/%02d/%04d".format(dayOfMonth, mesReal, year)
+                    botonFecha.text = fechaSeleccionada
+                },
+                anio,
+                mes,
+                dia
+            )
+            datePicker.show()
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
