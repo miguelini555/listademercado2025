@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/prioridad_baja"
+        android:title="Baja"/>
+
+    <item
+        android:id="@+id/prioridad_media"
+        android:title="Media"/>
+
+    <item
+        android:id="@+id/prioridad_alta"
+        android:title="Alta"/>
+</menu>

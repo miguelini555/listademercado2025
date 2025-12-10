@@ -2,17 +2,19 @@ package com.example.andevmarketlist
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageButton
+import android.widget.PopupMenu
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class activity_Calendario : AppCompatActivity() {
+class PantallaListasActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_calendario)
+        setContentView(R.layout.activity_pantalla_listas)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -23,6 +25,7 @@ class activity_Calendario : AppCompatActivity() {
         val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
         val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
         val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
+        val botonGuardar = findViewById<Button>(R.id.button_guardar)
 
         botonCalendario.setOnClickListener {
             val intent = Intent(this, activity_Calendario::class.java)
@@ -34,10 +37,29 @@ class activity_Calendario : AppCompatActivity() {
             startActivity(intent)
         }
 
-        botonAlarma.setOnClickListener {
-            // TODO: reemplaza AlarmaActivity por la activity real cuando la tengas
-            // val intent = Intent(this, AlarmaActivity::class.java)
-            // startActivity(intent)
+        botonGuardar.setOnClickListener {
+            val intent = Intent(this, pantalla_menu::class.java)
+            startActivity(intent)
         }
+
+        val botonPrioridad = findViewById<Button>(R.id.button_prioridad)
+
+        botonPrioridad.setOnClickListener { view ->
+            val popup = PopupMenu(this, view)
+            popup.menuInflater.inflate(R.menu.menu_prioridad, popup.menu)
+
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.prioridad_baja -> botonPrioridad.text = "Baja"
+                    R.id.prioridad_media -> botonPrioridad.text = "Media"
+                    R.id.prioridad_alta -> botonPrioridad.text = "Alta"
+                }
+                true
+            }
+
+            popup.show()
+        }
+
+
     }
 }
