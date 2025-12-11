@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
 
         val currentUser=auth.currentUser
         if(currentUser !=null){
-            val intentUsuarioLogueado = Intent(this,Usuario1Activity::class.java)
+            val intentUsuarioLogueado = Intent(this, pantalla_menu::class.java)
             startActivity(intentUsuarioLogueado)
         }
 
@@ -60,7 +60,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener{ task ->
             if (task.isSuccessful){
                 //login exitoso
-                val intentLogueado= Intent(this, Usuario1Activity::class.java)
+                val intentLogueado= Intent(this, pantalla_menu::class.java)
                 startActivity(intentLogueado)
             }else{
                 //login fallido
