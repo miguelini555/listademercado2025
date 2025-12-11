@@ -5,8 +5,12 @@ import java.util.Calendar
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.PopupMenu
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -51,6 +55,10 @@ class PantallaListasActivity : AppCompatActivity() {
         val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
         val botonGuardar = findViewById<Button>(R.id.button_guardar)
 
+        val editTextProducto = findViewById<EditText>(R.id.edittext_nombreproducto)
+        val listaProductos = findViewById<LinearLayout>(R.id.listaProductos)
+        val botonAgregar = findViewById<Button>(R.id.button_agregar)
+
         botonCalendario.setOnClickListener {
             val intent = Intent(this, activity_Calendario::class.java)
             startActivity(intent)
@@ -64,6 +72,22 @@ class PantallaListasActivity : AppCompatActivity() {
         botonGuardar.setOnClickListener {
             val intent = Intent(this, pantalla_menu::class.java)
             startActivity(intent)
+        }
+
+        botonAgregar.setOnClickListener {
+            val texto = editTextProducto.text.toString().trim()
+
+            if (texto.isEmpty()) {
+                Toast.makeText(this, "Ingresa un producto primero", Toast.LENGTH_SHORT).show()
+            } else {
+                val nuevoProducto = TextView(this)
+                nuevoProducto.text = "- $texto"
+                nuevoProducto.textSize = 18f
+                nuevoProducto.setPadding(10, 10, 10, 10)
+
+                listaProductos.addView(nuevoProducto)
+                editTextProducto.text.clear()
+            }
         }
 
         val botonPrioridad = findViewById<Button>(R.id.button_prioridad)
