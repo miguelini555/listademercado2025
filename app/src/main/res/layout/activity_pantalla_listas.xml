@@ -62,12 +62,31 @@
 
             <EditText
                 android:id="@+id/edittext_nombreproducto"
-                android:layout_width="match_parent"
+                android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:hint="Nombre del Producto"
-                android:padding="10dp"/>
+                android:padding="10dp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:imeOptions="actionDone"/>
+            <Button
+                android:id="@+id/button_agregar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OK"
+                android:layout_marginStart="8dp"
+                android:background="@color/white"
+                android:textColor="@android:color/black" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/listaProductos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"/>
+
 
         <LinearLayout
             android:layout_width="220dp"
