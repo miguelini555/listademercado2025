@@ -30,14 +30,6 @@
             android:text="MarkTL"
             android:textSize="30sp"
             android:textStyle="bold" />
-
-        <ImageButton
-            android:id="@+id/botonCampana"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="Notificacion"
-            android:src="@drawable/notification_bell_svgrepo_com" />
     </LinearLayout>
 
 
