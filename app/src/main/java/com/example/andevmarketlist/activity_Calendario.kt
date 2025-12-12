@@ -66,8 +66,8 @@ class activity_Calendario : AppCompatActivity() {
         }
 
         botonAlarma.setOnClickListener {
-            //val intent = Intent(this, AlarmaActivity::class.java)
-            //startActivity(intent)
+            val intent = Intent(this, pantalla_historial::class.java)
+            startActivity(intent)
         }
     }
 }
