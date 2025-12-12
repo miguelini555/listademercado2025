@@ -58,19 +58,19 @@ class LoginActivity : AppCompatActivity() {
     ){
         auth.signInWithEmailAndPassword(correo,password)
             .addOnCompleteListener{ task ->
-            if (task.isSuccessful){
-                //login exitoso
-                val intentLogueado= Intent(this, pantalla_menu::class.java)
-                startActivity(intentLogueado)
-            }else{
-                //login fallido
-                Toast.makeText(
-                    baseContext,
-                    "No pudo loguearse",
-                    Toast.LENGTH_LONG,
-                ).show()
+                if (task.isSuccessful){
+                    //login exitoso
+                    val intentLogueado= Intent(this, pantalla_menu::class.java)
+                    startActivity(intentLogueado)
+                }else{
+                    //login fallido
+                    Toast.makeText(
+                        baseContext,
+                        "No pudo loguearse",
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
             }
-        }
     }
     fun crearUsuario(
         correo: String,
