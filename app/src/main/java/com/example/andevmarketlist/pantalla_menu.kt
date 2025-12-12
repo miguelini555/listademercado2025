@@ -39,5 +39,11 @@ class pantalla_menu : AppCompatActivity() {
             val intent = Intent(this, PantallaListasActivity::class.java)
             startActivity(intent)
         }
+
+        botonAlarma.setOnClickListener {
+            val intent = Intent(this, pantalla_historial::class.java)
+            startActivity(intent)
+        }
+
     }
 }
