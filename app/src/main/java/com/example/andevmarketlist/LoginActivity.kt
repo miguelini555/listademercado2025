@@ -78,16 +78,16 @@ class LoginActivity : AppCompatActivity() {
     )
     {
         auth.createUserWithEmailAndPassword(correo, password).addOnCompleteListener { task ->
-            if (task.isSuccessful){
-                //Usuario creado correctamente
-            }else{
-                //No se pudo crear usuario
-                Toast.makeText(
-                    baseContext,
-                    "No se pudo crear usuario",
-                    Toast.LENGTH_LONG,
-                ).show()
+                if (task.isSuccessful){
+                    //Usuario creado correctamente
+                }else{
+                    //No se pudo crear usuario
+                    Toast.makeText(
+                        baseContext,
+                        "No se pudo crear usuario",
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
             }
-        }
     }
 }

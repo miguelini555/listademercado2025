@@ -7,6 +7,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.andevmarketlist.adapters.CalendarioAdapter
+import com.example.andevmarketlist.dataclases.DiaCalendario
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class activity_Calendario : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,6 +26,30 @@ class activity_Calendario : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val recyclerCalendario = findViewById<RecyclerView>(R.id.recycler_calendario)
+        recyclerCalendario.layoutManager = LinearLayoutManager(this)
+
+        val formato = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale("es", "ES"))
+        val hoy = LocalDate.now()
+
+        val listaDias = mutableListOf<DiaCalendario>()
+
+        for (i in 0..5) {
+            val fechaTexto = hoy.plusDays(i.toLong()).format(formato)
+
+            val eventos = when (i) {
+                0 -> listOf("Plazo vence en unas horas")
+                1 -> listOf("Plazo vence en un día")
+                2 -> listOf("Sin eventos")
+                else -> listOf("Sin eventos")
+            }
+
+            listaDias.add(DiaCalendario(fecha = fechaTexto, eventos = eventos))
+        }
+
+        val adapter = CalendarioAdapter(listaDias)
+        recyclerCalendario.adapter = adapter
 
         val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
         val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
@@ -35,9 +66,8 @@ class activity_Calendario : AppCompatActivity() {
         }
 
         botonAlarma.setOnClickListener {
-            // TODO: reemplaza AlarmaActivity por la activity real cuando la tengas
-            // val intent = Intent(this, AlarmaActivity::class.java)
-            // startActivity(intent)
+            //val intent = Intent(this, AlarmaActivity::class.java)
+            //startActivity(intent)
         }
     }
 }
