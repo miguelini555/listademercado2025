@@ -93,6 +93,7 @@ class PantallaListasActivity : AppCompatActivity() {
                 listaProductos.addView(nuevoProducto)
                 editTextProducto.text.clear()
             }
+
         }
 
         val botonPrioridad = findViewById<Button>(R.id.button_prioridad)
