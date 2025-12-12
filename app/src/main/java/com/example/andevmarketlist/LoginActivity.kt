@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
 
         val currentUser=auth.currentUser
         if(currentUser !=null){
-            val intentUsuarioLogueado = Intent(this,Usuario1Activity::class.java)
+            val intentUsuarioLogueado = Intent(this, pantalla_menu::class.java)
             startActivity(intentUsuarioLogueado)
         }
 
@@ -58,19 +58,19 @@ class LoginActivity : AppCompatActivity() {
     ){
         auth.signInWithEmailAndPassword(correo,password)
             .addOnCompleteListener{ task ->
-            if (task.isSuccessful){
-                //login exitoso
-                val intentLogueado= Intent(this, Usuario1Activity::class.java)
-                startActivity(intentLogueado)
-            }else{
-                //login fallido
-                Toast.makeText(
-                    baseContext,
-                    "No pudo loguearse",
-                    Toast.LENGTH_LONG,
-                ).show()
+                if (task.isSuccessful){
+                    //login exitoso
+                    val intentLogueado= Intent(this, pantalla_menu::class.java)
+                    startActivity(intentLogueado)
+                }else{
+                    //login fallido
+                    Toast.makeText(
+                        baseContext,
+                        "No pudo loguearse",
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
             }
-        }
     }
     fun crearUsuario(
         correo: String,
@@ -78,16 +78,16 @@ class LoginActivity : AppCompatActivity() {
     )
     {
         auth.createUserWithEmailAndPassword(correo, password).addOnCompleteListener { task ->
-                if (task.isSuccessful){
-                    //Usuario creado correctamente
-                }else{
-                    //No se pudo crear usuario
-                    Toast.makeText(
-                        baseContext,
-                        "No se pudo crear usuario",
-                        Toast.LENGTH_LONG,
-                    ).show()
-                }
+            if (task.isSuccessful){
+                //Usuario creado correctamente
+            }else{
+                //No se pudo crear usuario
+                Toast.makeText(
+                    baseContext,
+                    "No se pudo crear usuario",
+                    Toast.LENGTH_LONG,
+                ).show()
             }
+        }
     }
 }
