@@ -74,6 +74,11 @@ class PantallaListasActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        botonAlarma.setOnClickListener {
+            val intent = Intent(this, pantalla_historial::class.java)
+            startActivity(intent)
+        }
+
         botonAgregar.setOnClickListener {
             val texto = editTextProducto.text.toString().trim()
 
