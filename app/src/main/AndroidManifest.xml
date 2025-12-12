@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AnDevMarketList">
         <activity
+            android:name=".ListaPersistenciaActivity"
+            android:exported="false" />
+        <activity
             android:name=".pantalla_historial"
             android:exported="false" />
         <activity
