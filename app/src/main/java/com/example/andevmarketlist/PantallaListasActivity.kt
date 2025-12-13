@@ -21,7 +21,7 @@ class PantallaListasActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_pantalla_listas)
-
+//12341234
         val botonFecha = findViewById<Button>(R.id.button_fecha)
 
         botonFecha.setOnClickListener {
