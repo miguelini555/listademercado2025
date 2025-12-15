@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    kotlin("plugin.serialization") version "1.9.0"
+    //kotlin("plugin.serialization") version "1.9.0"
+    id ("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
 
@@ -62,6 +63,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
     implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("com.google.firebase:firebase-auth")
     implementation(libs.play.services.auth)
     implementation(libs.play.services.maps)
