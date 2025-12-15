@@ -46,6 +46,12 @@
             android:name=".pantalla_historial"
             android:exported="false" />
         <activity
+            android:name=".VerListaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotificacionesActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity_Calendario"
             android:exported="false" />
         <activity
