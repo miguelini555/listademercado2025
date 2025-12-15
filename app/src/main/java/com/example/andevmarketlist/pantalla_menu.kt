@@ -158,13 +158,13 @@ class pantalla_menu : AppCompatActivity() {
         gridListas.rowCount = GridLayout.UNDEFINED
 
         listas.forEachIndexed { index, lista ->
-            val card = crearCardLista(lista, index)
+            val card = crearCardLista(lista)
             val params = GridLayout.LayoutParams().apply {
                 width = 0
-                height = dpToPx(150)  // AQUI - IMPORTANTE: Altura fija
+                height = 300 // AQUI - IMPORTANTE: Altura fija
                 columnSpec = GridLayout.spec(index % 2, 1f)
                 rowSpec = GridLayout.spec(index / 2, 1f)
-                setMargins(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4))  // AQUI - IMPORTANTE: Márgenes
+                setMargins(4, 4, 4, 4)  // AQUI - IMPORTANTE: Márgenes
             }
             card.layoutParams = params
             gridListas.addView(card)
@@ -172,77 +172,56 @@ class pantalla_menu : AppCompatActivity() {
     }
 
     // AQUI - VERSIÓN COMPLETA Y FUNCIONAL
-    private fun crearCardLista(lista: ListaApp, index: Int): LinearLayout {
-        return LinearLayout(this).apply {
-            // AQUI - IMPORTANTE: Padding interno
-            setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12))
+    private fun crearCardLista(lista: ListaApp): LinearLayout {
+        val card = LinearLayout(this)
+        card.orientation = LinearLayout.VERTICAL
+        card.gravity = Gravity.CENTER
+        card.setPadding(16, 16, 16, 16)
 
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-
-            // AQUI - IMPORTANTE: Color según prioridad
-            setBackgroundColor(
-                when (lista.prioridad) {
-                    "Alta" -> Color.parseColor("#FFCCCC")  // Rojo claro
-                    "Media" -> Color.parseColor("#FFFFCC") // Amarillo claro
-                    else -> Color.parseColor("#CCFFCC")    // Verde claro
-                }
-            )
-
-            // AQUI - IMPORTANTE: Elevación para sombra
-            elevation = 10f
-            // Nombre
-            addView(TextView(this@pantalla_menu).apply {
-                text = lista.nombre
-                textSize = 14f
-                gravity = Gravity.CENTER
-                setTextColor(Color.BLACK)
-                maxLines = 2
-            }
-            )
-
-            // Productos
-            addView(TextView(this@pantalla_menu).apply {
-                text = "${lista.productos.size} productos"
-                textSize = 12f
-                gravity = Gravity.CENTER
-                setTextColor(Color.DKGRAY)
-            })
-
-            // Prioridad
-            addView(TextView(this@pantalla_menu).apply {
-                text = when (lista.prioridad) {
-                    "Alta" -> "Alta"
-                    "Media" -> "Media"
-                    else -> "Baja"
-                }
-                textSize = 11f
-                gravity = Gravity.CENTER
-                setTextColor(Color.DKGRAY)
-            })
-
-            // Fecha límite
-            if (lista.fechaLimite != null) {
-                addView(TextView(this@pantalla_menu).apply {
-                    text = "${lista.fechaLimite}"
-                    textSize = 10f
-                    gravity = Gravity.CENTER
-                    setTextColor(Color.RED)
-                })
-            }
-
-            // AQUI - IMPORTANTE: Click listener funcional
-            setOnClickListener {
-                val intent = Intent(this@pantalla_menu, VerListaActivity::class.java).apply {
-                    putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
-                }
-                startActivity(intent)
-            }
+        // Color según prioridad
+        when (lista.prioridad) {
+            "Alta" -> card.setBackgroundColor(Color.parseColor("#FFCCCC"))
+            "Media" -> card.setBackgroundColor(Color.parseColor("#FFFFCC"))
+            else -> card.setBackgroundColor(Color.parseColor("#CCFFCC"))
         }
+
+        // Nombre de la lista
+        val textViewNombre = TextView(this)
+        textViewNombre.text = lista.nombre
+        textViewNombre.textSize = 14f
+        textViewNombre.gravity = Gravity.CENTER
+        textViewNombre.setTextColor(Color.BLACK)
+        card.addView(textViewNombre)
+
+        // Productos (máximo 3)
+        lista.productos.take(3).forEach { producto ->
+            val tv = TextView(this)
+            tv.text = "• $producto"
+            tv.textSize = 12f
+            card.addView(tv)
+        }
+
+        // Solo "..." si hay más de 3
+        if (lista.productos.size > 3) {
+            val tv = TextView(this)
+            tv.text = "..."
+            tv.textSize = 12f
+            card.addView(tv)
+        }
+
+        // Click
+        card.setOnClickListener {
+            val intent = Intent(this, VerListaActivity::class.java)
+            // Usar la constante de VerListaActivity
+            intent.putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
+            startActivity(intent)
+        }
+
+        return card
     }
 
     // AQUI - IMPORTANTE: Función para convertir dp a px
-    private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
+    // private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
 
     override fun onResume() {
         super.onResume()
