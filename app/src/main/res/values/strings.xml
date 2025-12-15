@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AnDev MarketList</string>
+    <string name="title_activity_mapa">mapaActivity</string>
+    <string name="app_name">EveryList</string>
 </resources>

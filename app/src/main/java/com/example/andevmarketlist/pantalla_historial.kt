@@ -15,11 +15,11 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class activity_Calendario : AppCompatActivity() {
+class pantalla_historial : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_calendario)
+        setContentView(R.layout.activity_pantalla_historial)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -27,8 +27,8 @@ class activity_Calendario : AppCompatActivity() {
             insets
         }
 
-        val recyclerCalendario = findViewById<RecyclerView>(R.id.recycler_calendario)
-        recyclerCalendario.layoutManager = LinearLayoutManager(this)
+        val recyclerHistorial = findViewById<RecyclerView>(R.id.recycler_historial)
+        recyclerHistorial.layoutManager = LinearLayoutManager(this)
 
         val formato = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale("es", "ES"))
         val hoy = LocalDate.now()
@@ -38,18 +38,14 @@ class activity_Calendario : AppCompatActivity() {
         for (i in 0..5) {
             val fechaTexto = hoy.plusDays(i.toLong()).format(formato)
 
-            val eventos = when (i) {
-                0 -> listOf("Plazo vence en unas horas")
-                1 -> listOf("Plazo vence en un día")
-                2 -> listOf("Sin eventos")
-                else -> listOf("Sin eventos")
-            }
+            val eventos = emptyList<String>()
 
             listaDias.add(DiaCalendario(fecha = fechaTexto, eventos = eventos))
         }
 
         val adapter = CalendarioAdapter(listaDias)
-        recyclerCalendario.adapter = adapter
+        recyclerHistorial.adapter = adapter
+
 
         val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
         val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
