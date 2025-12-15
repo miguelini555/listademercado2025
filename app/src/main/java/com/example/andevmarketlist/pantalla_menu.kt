@@ -24,6 +24,7 @@ class pantalla_menu : AppCompatActivity() {
         val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
         val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
         val botonAgregar = findViewById<ImageButton>(R.id.botonAgregar)
+        val mapaBoton = findViewById< ImageButton>(R.id.mapaBoton)
 
         botonCalendario.setOnClickListener {
             val intent = Intent(this, activity_Calendario::class.java)
@@ -44,6 +45,12 @@ class pantalla_menu : AppCompatActivity() {
             val intent = Intent(this, pantalla_historial::class.java)
             startActivity(intent)
         }
+
+        mapaBoton.setOnClickListener {
+            val intent = Intent(this, mapaActivity::class.java)
+            startActivity(intent)
+        }
+
 
     }
 }
