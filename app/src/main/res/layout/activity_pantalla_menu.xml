@@ -21,6 +21,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+
+        <ImageButton
+            android:id="@+id/mapaBoton"
+            android:layout_width="10dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:padding="6dp"
+            android:src="@drawable/notification_bell_svgrepo_com" />
+
         <TextView
             android:id="@+id/tituloApp"
             android:layout_width="0dp"
@@ -30,6 +40,7 @@
             android:text="MarkTL"
             android:textSize="30sp"
             android:textStyle="bold" />
+
     </LinearLayout>
 
 
@@ -46,7 +57,6 @@
         app:layout_constraintBottom_toTopOf="@id/bottomBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
 
         <LinearLayout
             android:layout_width="0dp"
