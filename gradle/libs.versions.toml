@@ -13,6 +13,9 @@ playServicesAuth = "21.4.0"
 googleAndroidLibrariesMapsplatformSecretsGradlePlugin = "2.0.1"
 playServicesMaps = "18.1.0"
 playServicesMapsVersion = "19.2.0"
+kotlinxSerializationJson = "1.8.0"
+roomKtx = "2.8.4"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -26,6 +29,8 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 gms-play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMapsVersion" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

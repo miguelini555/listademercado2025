@@ -11,9 +11,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/every_list"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/every_list_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AnDevMarketList">
 
@@ -39,6 +39,9 @@
             android:name=".mapaActivity"
             android:exported="false"
             android:label="@string/title_activity_mapa" />
+        <activity
+            android:name=".ListaPersistenciaActivity"
+            android:exported="false" />
         <activity
             android:name=".pantalla_historial"
             android:exported="false" />
