@@ -31,125 +31,137 @@
             android:textSize="25sp"/>
     </LinearLayout>
 
-    <!-- Contenido principal -->
-    <LinearLayout
-        android:id="@+id/parteCentral"
+    <!-- SCROLLVIEW AÑADIDO -->
+    <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:gravity="top"
         android:background="#F3DFA2"
         app:layout_constraintTop_toBottomOf="@id/barraSuperior"
         app:layout_constraintBottom_toTopOf="@id/barraInferior"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- NOMBRE DE LA LISTA (NUEVO) -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Nombre de la Lista:"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"/>
-
-        <EditText
-            android:id="@+id/edittext_nombrelista"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:hint="Ej: Compras del Supermercado"
-            android:padding="12dp"
-            android:singleLine="true"
-            android:layout_marginBottom="20dp"/>
-
-        <!-- PRODUCTOS -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Agregar Productos:"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"/>
-
+        <!-- Contenido principal -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="15dp">
-
-            <EditText
-                android:id="@+id/edittext_nombreproducto"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:hint="Nombre del Producto"
-                android:padding="10dp"
-                android:singleLine="true"
-                android:maxLines="1"
-                android:imeOptions="actionDone"/>
-
-            <Button
-                android:id="@+id/button_agregar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="OK"
-                android:layout_marginStart="8dp"
-                android:background="@color/white"
-                android:textColor="@android:color/black"/>
-        </LinearLayout>
-
-        <!-- LISTA DE PRODUCTOS AGREGADOS -->
-        <LinearLayout
-            android:id="@+id/listaProducts"
+            android:id="@+id/parteCentral"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="10dp"
-            android:background="@color/white"
-            android:padding="10dp"/>
+            android:padding="20dp"
+            android:gravity="top"
+            android:background="#F3DFA2">
 
-        <!-- FECHA LÍMITE -->
-        <LinearLayout
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp">
+            <!-- NOMBRE DE LA LISTA -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre de la Lista:"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp"/>
 
-            <Button
-                android:id="@+id/button_fecha"
+            <EditText
+                android:id="@+id/edittext_nombrelista"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:hint="Ej: Compras del Supermercado"
+                android:padding="12dp"
+                android:singleLine="true"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- PRODUCTOS -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Agregar Productos:"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="15dp">
+
+                <EditText
+                    android:id="@+id/edittext_nombreproducto"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:hint="Nombre del Producto"
+                    android:padding="10dp"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:imeOptions="actionDone"/>
+
+                <Button
+                    android:id="@+id/button_agregar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OK"
+                    android:layout_marginStart="8dp"
+                    android:background="@android:color/white"
+                    android:textColor="@android:color/black"/>
+            </LinearLayout>
+
+            <!-- LISTA DE PRODUCTOS AGREGADOS -->
+            <LinearLayout
+                android:id="@+id/listaProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/white"
+                android:padding="10dp"/>
+
+            <!-- FECHA LÍMITE -->
+            <LinearLayout
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp">
+
+                <Button
+                    android:id="@+id/button_fecha"
+                    android:layout_width="220dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:backgroundTint="@android:color/white"
+                    android:text="Seleccionar Fecha Límite"/>
+            </LinearLayout>
+
+            <!-- PRIORIDAD -->
+            <Button
+                android:id="@+id/button_prioridad"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Prioridad: Media"
+                android:layout_marginTop="20dp"
+                android:textColor="@android:color/black"
+                android:backgroundTint="@android:color/white"/>
+
+            <!-- BOTÓN GUARDAR -->
+            <Button
+                android:id="@+id/button_guardar"
+                android:layout_width="140dp"
+                android:layout_height="50dp"
+                android:background="@android:color/white"
                 android:textColor="@android:color/black"
                 android:backgroundTint="@android:color/white"
-                android:text="Seleccionar Fecha Límite"/>
+                android:text="Guardar Lista"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="center"/>
+
+            <!-- ESPACIO AL FINAL PARA MEJOR SCROLL -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="100dp"/>
+
         </LinearLayout>
-
-        <!-- PRIORIDAD -->
-        <Button
-            android:id="@+id/button_prioridad"
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Prioridad: Media"
-            android:layout_marginTop="20dp"
-            android:textColor="@android:color/black"
-            android:backgroundTint="@android:color/white"/>
-
-        <!-- BOTÓN GUARDAR -->
-        <Button
-            android:id="@+id/button_guardar"
-            android:layout_width="140dp"
-            android:layout_height="50dp"
-            android:background="@color/white"
-            android:textColor="@android:color/black"
-            android:backgroundTint="@android:color/white"
-            android:text="Guardar Lista"
-            android:layout_marginTop="30dp"
-            android:layout_gravity="center"/>
-
-    </LinearLayout>
+    </ScrollView>
 
     <!-- Barra inferior de navegación -->
     <LinearLayout
@@ -193,174 +205,3 @@
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-<!--
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".PantallaListasActivity">
-
-    <LinearLayout
-        android:id="@+id/barraSuperior"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        android:gravity="center_vertical"
-        android:background="#F3DFA2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:id="@+id/textview_titulo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="EveryList"
-            android:textSize="22sp"/>
-        </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/parteCentral"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:gravity="top"
-        android:background="#F3DFA2"
-        app:layout_constraintTop_toBottomOf="@id/barraSuperior"
-        app:layout_constraintBottom_toTopOf="@id/barraInferior"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:id="@+id/textview_crearlista"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Crear Lista"
-            android:gravity="center"
-            android:textSize="26sp"
-            android:padding="10dp"
-            android:background="#F2C76A"
-            android:layout_marginBottom="20dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="15dp">
-
-            <EditText
-                android:id="@+id/edittext_nombreproducto"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:hint="Nombre del Producto"
-                android:padding="10dp"
-                android:singleLine="true"
-                android:maxLines="1"
-                android:imeOptions="actionDone"/>
-            <Button
-                android:id="@+id/button_agregar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="OK"
-                android:layout_marginStart="8dp"
-                android:background="@color/white"
-                android:textColor="@android:color/black" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/listaProductos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="10dp"/>
-
-
-        <LinearLayout
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp">
-            <Button
-                android:id="@+id/button_fecha"
-                android:layout_width="220dp"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
-                android:backgroundTint="@android:color/white"
-                android:text="Fecha Limite"/>
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/button_prioridad"
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Prioridad"
-            android:layout_marginTop="20dp"
-            android:textColor="@android:color/black"
-            android:backgroundTint="@android:color/white"/>
-
-        <Button
-            android:id="@+id/button_guardar"
-            android:layout_width="140dp"
-            android:layout_height="50dp"            android:background="@color/white"
-            android:textColor="@android:color/black"
-            android:backgroundTint="@android:color/white"
-            android:text="Guardar"
-            android:layout_marginTop="30dp"
-            android:layout_gravity="center"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/barraInferior"
-        android:layout_width="0dp"
-        android:layout_height="70dp"
-        android:orientation="horizontal"
-        android:background="#F3DFA2"
-        android:gravity="center"
-        android:weightSum="3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageButton
-            android:id="@+id/botonCalendario"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:padding="6dp"
-            android:src="@drawable/calender_svgrepo_com"/>
-
-        <ImageButton
-            android:id="@+id/botonInicio"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:padding="6dp"
-            android:src="@drawable/home_svgrepo_com"/>
-
-        <ImageButton
-            android:id="@+id/botonAlarma"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:padding="6dp"
-            android:src="@drawable/alarm_clock_svgrepo_com"/>
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
--->
-

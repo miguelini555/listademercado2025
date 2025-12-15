@@ -52,7 +52,7 @@
             android:background="@color/beige"
             android:padding="16dp">
 
-            <!-- Información de la lista -->
+            <!-- Información de la lista con checkbox -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,16 +61,25 @@
                 android:background="@android:color/white"
                 android:layout_marginBottom="16dp">
 
-                <!-- Estado -->
-                <TextView
-                    android:id="@+id/textViewEstado"
-                    android:layout_width="wrap_content"
+                <!-- Checkbox para marcar lista completa -->
+                <CheckBox
+                    android:id="@+id/checkBoxListaCompletada"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="PENDIENTE"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="end"
-                    android:layout_marginBottom="8dp"/>
+                    android:text="Marcar lista como completada"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- Boton Eliminar Lista -->
+                <Button
+                    android:id="@+id/botonEliminarLista"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Eliminar Lista"
+                    android:textSize="16sp"
+                    android:backgroundTint="#FF4444"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="16dp"/>
 
                 <!-- Fecha límite -->
                 <TextView
@@ -110,13 +119,13 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"/>
 
+            <!-- Contenedor para productos con checkboxes -->
             <LinearLayout
                 android:id="@+id/linearLayoutProductos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@android:color/white"
-                android:padding="16dp"/>
+                android:background="@android:color/white"/>
 
             <!-- Espacio al final -->
             <View
