@@ -9,7 +9,6 @@
     android:background="@color/beige"
     tools:context=".VerListaActivity">
 
-    <!-- Barra superior -->
     <LinearLayout
         android:id="@+id/barraSuperior"
         android:layout_width="0dp"
@@ -35,7 +34,6 @@
             android:ellipsize="end"/>
     </LinearLayout>
 
-    <!-- Contenido desplazable -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -52,7 +50,6 @@
             android:background="@color/beige"
             android:padding="16dp">
 
-            <!-- Información de la lista con checkbox -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +58,6 @@
                 android:background="@android:color/white"
                 android:layout_marginBottom="16dp">
 
-                <!-- Checkbox para marcar lista completa -->
                 <CheckBox
                     android:id="@+id/checkBoxListaCompletada"
                     android:layout_width="match_parent"
@@ -70,18 +66,16 @@
                     android:textSize="16sp"
                     android:layout_marginBottom="12dp"/>
 
-                <!-- Boton Eliminar Lista -->
                 <Button
                     android:id="@+id/botonEliminarLista"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Eliminar Lista"
                     android:textSize="16sp"
-                    android:backgroundTint="#FF4444"
+                    android:backgroundTint="@color/rojo"
                     android:textColor="@android:color/white"
                     android:layout_marginBottom="16dp"/>
 
-                <!-- Fecha límite -->
                 <TextView
                     android:id="@+id/textViewFechaLimite"
                     android:layout_width="match_parent"
@@ -90,7 +84,6 @@
                     android:textSize="16sp"
                     android:layout_marginBottom="8dp"/>
 
-                <!-- Prioridad -->
                 <TextView
                     android:id="@+id/textViewPrioridad"
                     android:layout_width="match_parent"
@@ -99,14 +92,13 @@
                     android:textSize="16sp"
                     android:layout_marginBottom="8dp"/>
 
-                <!-- Fecha creación -->
                 <TextView
                     android:id="@+id/textViewFechaCreacion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Creada:"
                     android:textSize="14sp"
-                    android:textColor="#666666"/>
+                    android:textColor="@color/negro"/>
 
             </LinearLayout>
 
@@ -119,7 +111,6 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"/>
 
-            <!-- Contenedor para productos con checkboxes -->
             <LinearLayout
                 android:id="@+id/linearLayoutProductos"
                 android:layout_width="match_parent"
@@ -127,7 +118,6 @@
                 android:orientation="vertical"
                 android:background="@android:color/white"/>
 
-            <!-- Espacio al final -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="50dp"/>
@@ -135,7 +125,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Barra inferior de navegación -->
     <LinearLayout
         android:id="@+id/barraInferior"
         android:layout_width="0dp"

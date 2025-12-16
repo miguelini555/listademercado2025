@@ -8,7 +8,6 @@
     android:layout_height="match_parent"
     tools:context=".pantalla_menu">
 
-    <!-- Barra superior -->
     <LinearLayout
         android:id="@+id/barraSuperior"
         android:layout_width="0dp"
@@ -16,7 +15,7 @@
         android:orientation="horizontal"
         android:padding="10dp"
         android:gravity="center_vertical"
-        android:background="#F3DFA2"
+        android:background="@color/mayonesa"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -32,11 +31,10 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- AQUI - MODIFICACION: ScrollView agregado -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#F5F5F5"
+        android:background="@color/white"
         app:layout_constraintTop_toBottomOf="@id/barraSuperior"
         app:layout_constraintBottom_toTopOf="@id/bottomBar"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +52,6 @@
 
     </ScrollView>
 
-    <!-- Botón flotante agregar -->
     <ImageButton
         android:id="@+id/botonAgregar"
         android:layout_width="60dp"
@@ -66,13 +63,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottomBar"/>
 
-    <!-- Barra inferior -->
     <LinearLayout
         android:id="@+id/bottomBar"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:orientation="horizontal"
-        android:background="#F3DFA2"
+        android:background="@color/mayonesa"
         android:gravity="center"
         android:weightSum="3"
         app:layout_constraintBottom_toBottomOf="parent"
