@@ -1,62 +1,3 @@
-/*
-package com.example.andevmarketlist
-
-import android.content.Intent
-import android.os.Bundle
-import android.widget.ImageButton
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-
-class pantalla_menu : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_pantalla_menu)
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
-        val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
-        val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
-        val botonAgregar = findViewById<ImageButton>(R.id.botonAgregar)
-        val mapaBoton = findViewById< ImageButton>(R.id.mapaBoton)
-
-        botonCalendario.setOnClickListener {
-            val intent = Intent(this, activity_Calendario::class.java)
-            startActivity(intent)
-        }
-
-        botonInicio.setOnClickListener {
-            val intent = Intent(this, pantalla_menu::class.java)
-            startActivity(intent)
-        }
-
-        botonAgregar.setOnClickListener {
-            val intent = Intent(this, PantallaListasActivity::class.java)
-            startActivity(intent)
-        }
-
-        botonAlarma.setOnClickListener {
-            val intent = Intent(this, pantalla_historial::class.java)
-            startActivity(intent)
-        }
-
-        mapaBoton.setOnClickListener {
-            val intent = Intent(this, mapaActivity::class.java)
-            startActivity(intent)
-        }
-
-
-    }
-}
-
- */
 package com.example.andevmarketlist
 
 import android.content.Intent
@@ -97,13 +38,16 @@ class pantalla_menu : AppCompatActivity() {
         val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
         val botonAgregar = findViewById<ImageButton>(R.id.botonAgregar)
 
-        botonCalendario.setOnClickListener {
-            val intent = Intent(this, activity_Calendario::class.java)
+        val botonNotificaciones = findViewById<ImageButton>(R.id.botonNotificaciones)
+
+        botonNotificaciones.setOnClickListener {
+            val intent = Intent(this, NotificacionesActivity::class.java)
             startActivity(intent)
         }
 
-        botonInicio.setOnClickListener {
-            cargarListasEnGrid()
+        botonCalendario.setOnClickListener {
+            val intent = Intent(this, activity_Calendario::class.java)
+            startActivity(intent)
         }
 
         botonAgregar.setOnClickListener {
@@ -112,7 +56,7 @@ class pantalla_menu : AppCompatActivity() {
         }
 
         botonAlarma.setOnClickListener {
-            val intent = Intent(this, NotificacionesActivity::class.java)
+            val intent = Intent(this, HistorialActivity::class.java)
             startActivity(intent)
         }
 
@@ -149,24 +93,7 @@ class pantalla_menu : AppCompatActivity() {
         val listas = obtenerTodasListas()
             .filter { !it.completada }
             .sortedByDescending { it.fechaCreacion }
-        /*
-        if (listas.isEmpty()) {
-            val tvMensaje = TextView(this).apply {
-                text = "No hay listas activas\n\nToca el botón + para crear una"
-                textSize = 16f
-                gravity = Gravity.CENTER
-                setTextColor(Color.GRAY)
 
-                layoutParams = GridLayout.LayoutParams().apply {
-                    width = GridLayout.LayoutParams.MATCH_PARENT
-                    height = dpToPx(200)
-                    columnSpec = GridLayout.spec(0, 2, 1f)
-                }
-            }
-            gridListas.addView(tvMensaje)
-            return
-        }
-        */
         gridListas.columnCount = 2
         gridListas.rowCount = GridLayout.UNDEFINED
 
@@ -174,31 +101,28 @@ class pantalla_menu : AppCompatActivity() {
             val card = crearCardLista(lista)
             val params = GridLayout.LayoutParams().apply {
                 width = 0
-                height = 300 // AQUI - IMPORTANTE: Altura fija
+                height = 300
                 columnSpec = GridLayout.spec(index % 2, 1f)
                 rowSpec = GridLayout.spec(index / 2, 1f)
-                setMargins(4, 4, 4, 4)  // AQUI - IMPORTANTE: Márgenes
+                setMargins(4, 4, 4, 4)
             }
             card.layoutParams = params
             gridListas.addView(card)
         }
     }
 
-    // AQUI - VERSIÓN COMPLETA Y FUNCIONAL
     private fun crearCardLista(lista: ListaApp): LinearLayout {
         val card = LinearLayout(this)
         card.orientation = LinearLayout.VERTICAL
         card.gravity = Gravity.CENTER
         card.setPadding(16, 16, 16, 16)
 
-        // Color según prioridad
         when (lista.prioridad) {
             "Alta" -> card.setBackgroundColor(Color.parseColor("#FFCCCC"))
             "Media" -> card.setBackgroundColor(Color.parseColor("#FFFFCC"))
             else -> card.setBackgroundColor(Color.parseColor("#CCFFCC"))
         }
 
-        // Nombre de la lista
         val textViewNombre = TextView(this)
         textViewNombre.text = lista.nombre
         textViewNombre.textSize = 14f
@@ -206,7 +130,6 @@ class pantalla_menu : AppCompatActivity() {
         textViewNombre.setTextColor(Color.BLACK)
         card.addView(textViewNombre)
 
-        // Productos (máximo 3)
         lista.productos.take(3).forEach { producto ->
             val tv = TextView(this)
             tv.text = "• $producto"
@@ -214,7 +137,6 @@ class pantalla_menu : AppCompatActivity() {
             card.addView(tv)
         }
 
-        // Solo "..." si hay más de 3
         if (lista.productos.size > 3) {
             val tv = TextView(this)
             tv.text = "..."
@@ -222,19 +144,14 @@ class pantalla_menu : AppCompatActivity() {
             card.addView(tv)
         }
 
-        // Click
         card.setOnClickListener {
             val intent = Intent(this, VerListaActivity::class.java)
-            // Usar la constante de VerListaActivity
             intent.putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
             startActivity(intent)
         }
 
         return card
     }
-
-    // AQUI - IMPORTANTE: Función para convertir dp a px
-    // private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
 
     override fun onResume() {
         super.onResume()

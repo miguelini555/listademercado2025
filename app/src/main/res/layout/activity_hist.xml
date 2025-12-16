@@ -6,7 +6,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".pantalla_menu">
+    android:background="@color/beige"
+    tools:context=".histActivity">
 
     <LinearLayout
         android:id="@+id/barraSuperior"
@@ -15,69 +16,62 @@
         android:orientation="horizontal"
         android:padding="10dp"
         android:gravity="center_vertical"
-        android:background="#F3DFA2"
+        android:background="@color/beige"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
-            android:id="@+id/tituloApp"
+            android:id="@+id/textViewTituloHistorial"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="EveryList"
-            android:textSize="30sp"
-            android:textStyle="bold"/>
-
-        <ImageButton
-            android:id="@+id/botonNotificaciones"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/transparent"
-            android:padding="6dp"
-            android:src="@drawable/notification_bell_svgrepo_com"/>
-
+            android:text="Historial de Listas"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"/>
     </LinearLayout>
 
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#F5F5F5"
+        android:background="@color/beige"
         app:layout_constraintTop_toBottomOf="@id/barraSuperior"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar"
+        app:layout_constraintBottom_toTopOf="@id/barraInferior"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <GridLayout
-            android:id="@+id/gridListas"
+        <LinearLayout
+            android:id="@+id/contenedorHistorial"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:rowCount="0"
-            android:padding="12dp"
-            android:alignmentMode="alignMargins"
-            android:useDefaultMargins="true"/>
+            android:orientation="vertical"
+            android:background="@color/beige"
+            android:padding="16dp">
 
+            <TextView
+                android:id="@+id/textViewMensajeVacio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No hay listas completadas en el historial"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:textColor="#666666"
+                android:padding="40dp"
+                android:visibility="gone"/>
+
+
+        </LinearLayout>
     </ScrollView>
 
-    <ImageButton
-        android:id="@+id/botonAgregar"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:src="@android:drawable/ic_input_add"
-        android:background="@android:color/white"
-        android:elevation="6dp"
-        android:layout_margin="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar"/>
-
     <LinearLayout
-        android:id="@+id/bottomBar"
+        android:id="@+id/barraInferior"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:orientation="horizontal"
-        android:background="#F3DFA2"
+        android:background="@color/beige"
         android:gravity="center"
         android:weightSum="3"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -111,4 +105,5 @@
             android:padding="6dp"
             android:src="@drawable/alarm_clock_svgrepo_com"/>
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
