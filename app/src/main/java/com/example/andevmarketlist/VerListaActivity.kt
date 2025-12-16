@@ -315,16 +315,13 @@ class VerListaActivity : AppCompatActivity() {
         }
 
         botonInicio.setOnClickListener {
-            finish()
+            val intent = Intent(this, pantalla_menu::class.java)
+            startActivity(intent)
         }
 
         botonAlarma.setOnClickListener {
             val intent = Intent(this, HistorialActivity::class.java)
             startActivity(intent)
         }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
     }
 }

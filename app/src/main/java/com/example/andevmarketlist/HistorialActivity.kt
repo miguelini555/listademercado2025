@@ -165,12 +165,10 @@ class HistorialActivity : AppCompatActivity() {
         }
 
         botonInicio.setOnClickListener {
-            finish()
+            val intent = Intent(this, pantalla_menu::class.java)
+            startActivity(intent)
         }
 
-        botonAlarma.setOnClickListener {
-            cargarHistorial()
-        }
     }
 
     override fun onResume() {

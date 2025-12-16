@@ -50,10 +50,6 @@ class pantalla_menu : AppCompatActivity() {
             startActivity(intent)
         }
 
-        botonInicio.setOnClickListener {
-            cargarListasEnGrid()
-        }
-
         botonAgregar.setOnClickListener {
             val intent = Intent(this, PantallaListasActivity::class.java)
             startActivity(intent)

@@ -219,12 +219,9 @@ class activity_Calendario : AppCompatActivity() {
         val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
         val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
 
-        botonCalendario.setOnClickListener {
-            cargarCalendario()
-        }
-
         botonInicio.setOnClickListener {
-            finish()
+            val intent = Intent(this, pantalla_menu::class.java)
+            startActivity(intent)
         }
 
         botonAlarma.setOnClickListener {

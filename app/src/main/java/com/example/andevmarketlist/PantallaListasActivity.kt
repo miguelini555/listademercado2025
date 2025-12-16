@@ -84,14 +84,14 @@ class PantallaListasActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        botonGuardar.setOnClickListener {
-            val nombreLista = editNombreLista.text.toString().trim()
-            guardarListaEnSharedPreferences(nombreLista)
-        }
-
         botonAlarma.setOnClickListener {
             val intent = Intent(this, NotificacionesActivity::class.java)
             startActivity(intent)
+        }
+
+        botonGuardar.setOnClickListener {
+            val nombreLista = editNombreLista.text.toString().trim()
+            guardarListaEnSharedPreferences(nombreLista)
         }
 
         botonAgregar.setOnClickListener {
@@ -169,7 +169,7 @@ class PantallaListasActivity : AppCompatActivity() {
         editor.putString(NOMBRE_DATO_LISTAS, listaString)
         editor.apply()
 
-        Toast.makeText(this, "Lista '$nombreLista' guardada", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Lista guardada", Toast.LENGTH_SHORT).show()
 
         val intent = Intent(this, pantalla_menu::class.java)
         startActivity(intent)
