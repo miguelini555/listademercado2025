@@ -72,21 +72,26 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
     }
-    fun crearUsuario(
-        correo: String,
-        password: String
-    )
-    {
-        auth.createUserWithEmailAndPassword(correo, password).addOnCompleteListener { task ->
-                if (task.isSuccessful){
-                    //Usuario creado correctamente
-                }else{
-                    //No se pudo crear usuario
-                    Toast.makeText(
-                        baseContext,
-                        "No se pudo crear usuario",
-                        Toast.LENGTH_LONG,
-                    ).show()
+    fun crearUsuario(correo: String, password: String) {
+
+        if (correo.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Campos vacíos", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (password.length < 6) {
+            Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        auth.createUserWithEmailAndPassword(correo, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "Usuario creado correctamente", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    val error = task.exception?.message
+                    Toast.makeText(this, error, Toast.LENGTH_LONG).show()
                 }
             }
     }
