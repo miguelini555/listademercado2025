@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
-import android.view.View
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -14,17 +13,15 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.andevmarketlist.dataclases.ListaApp
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import java.text.SimpleDateFormat
-import java.util.*
 
-class PantallaHistorialActivity : AppCompatActivity() {
+class HistorialActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_pantalla_historial)
+        setContentView(R.layout.activity_historial)
 
         sharedPreferences = getSharedPreferences(
             pantalla_menu.NOMBRE_FICHERO_SHARED_PREFERENCES,
@@ -60,111 +57,93 @@ class PantallaHistorialActivity : AppCompatActivity() {
     }
 
     private fun cargarHistorial() {
-        val contenedorHistorial = findViewById<LinearLayout>(R.id.contenedorHistorial)
-        val mensajeVacio = findViewById<TextView>(R.id.textViewMensajeVacio)
-
-        contenedorHistorial.removeAllViews()
+        val linearLayoutContenedor = findViewById<LinearLayout>(R.id.linearLayoutContenedor)
+        linearLayoutContenedor.removeAllViews()
 
         val listasCompletadas = obtenerTodasListas()
             .filter { it.completada }
-            .sortedByDescending {
-                try {
-                    SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).parse(it.fechaCreacion)
-                } catch (e: Exception) {
-                    Date()
-                }
-            }
+            .sortedByDescending { it.fechaCreacion }
 
         if (listasCompletadas.isEmpty()) {
-            mensajeVacio.visibility = View.VISIBLE
+            val tvMensaje = TextView(this)
+            tvMensaje.text = "No hay listas completadas en el historial"
+            tvMensaje.textSize = 18f
+            tvMensaje.gravity = Gravity.CENTER
+            tvMensaje.setTextColor(Color.GRAY)
+            tvMensaje.setPadding(0, 100, 0, 0)
+
+            linearLayoutContenedor.addView(tvMensaje)
             return
         }
 
-        mensajeVacio.visibility = View.GONE
-
         listasCompletadas.forEachIndexed { index, lista ->
             val card = crearCardListaCompletada(lista, index)
-            contenedorHistorial.addView(card)
+            linearLayoutContenedor.addView(card)
         }
     }
 
     private fun crearCardListaCompletada(lista: ListaApp, index: Int): LinearLayout {
         val card = LinearLayout(this)
         card.orientation = LinearLayout.VERTICAL
-        card.setPadding(20, 20, 20, 20)
+        card.setPadding(25, 20, 25, 20)
 
-        card.setBackgroundColor(Color.parseColor("#E8E8E8"))
+        card.setBackgroundColor(Color.parseColor("#F0F0F0"))
 
         val params = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        params.bottomMargin = 16
+        params.setMargins(16, 8, 16, 16)
         card.layoutParams = params
-
-        val fila1 = LinearLayout(this)
-        fila1.orientation = LinearLayout.HORIZONTAL
-        fila1.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
 
         val textViewNombre = TextView(this)
         textViewNombre.text = lista.nombre
         textViewNombre.textSize = 18f
         textViewNombre.setTextColor(Color.BLACK)
-        textViewNombre.layoutParams = LinearLayout.LayoutParams(
-            0,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            1f
-        )
+        textViewNombre.setTypeface(null, android.graphics.Typeface.BOLD)
+        textViewNombre.setPadding(0, 0, 0, 12)
+        card.addView(textViewNombre)
 
-        val textViewCompletada = TextView(this)
-        textViewCompletada.text = "✓ Completada"
-        textViewCompletada.textSize = 14f
-        textViewCompletada.setTextColor(Color.parseColor("#4CAF50"))
-        textViewCompletada.gravity = Gravity.END
+        val infoLayout = LinearLayout(this)
+        infoLayout.orientation = LinearLayout.VERTICAL
+        infoLayout.setPadding(0, 0, 0, 0)
 
-        fila1.addView(textViewNombre)
-        fila1.addView(textViewCompletada)
-        card.addView(fila1)
+        val tvEstado = TextView(this)
+        tvEstado.text = "Completada"
+        tvEstado.textSize = 14f
+        tvEstado.setTextColor(Color.parseColor("#4CAF50"))
+        tvEstado.setPadding(0, 0, 0, 6)
+        infoLayout.addView(tvEstado)
 
-        val textViewFecha = TextView(this)
-        textViewFecha.text = "Creada: ${lista.fechaCreacion}"
-        textViewFecha.textSize = 14f
-        textViewFecha.setTextColor(Color.DKGRAY)
-        textViewFecha.setPadding(0, 8, 0, 8)
-        card.addView(textViewFecha)
+        val tvFecha = TextView(this)
+        tvFecha.text = "Creada: ${lista.fechaCreacion}"
+        tvFecha.textSize = 14f
+        tvFecha.setTextColor(Color.DKGRAY)
+        tvFecha.setPadding(0, 0, 0, 6)
+        infoLayout.addView(tvFecha)
 
-        if (lista.fechaLimite != null) {
-            val textViewFechaLimite = TextView(this)
-            textViewFechaLimite.text = "Fecha limite: ${lista.fechaLimite}"
-            textViewFechaLimite.textSize = 14f
-            textViewFechaLimite.setTextColor(Color.DKGRAY)
-            textViewFechaLimite.setPadding(0, 0, 0, 8)
-            card.addView(textViewFechaLimite)
-        }
-
-        val textViewPrioridad = TextView(this)
-        textViewPrioridad.text = "Prioridad: ${lista.prioridad}"
-        textViewPrioridad.textSize = 14f
-        textViewPrioridad.setTextColor(Color.DKGRAY)
-        textViewPrioridad.setPadding(0, 0, 0, 8)
-        card.addView(textViewPrioridad)
+        val tvPrioridad = TextView(this)
+        tvPrioridad.text = "Prioridad: ${lista.prioridad}"
+        tvPrioridad.textSize = 14f
+        tvPrioridad.setTextColor(Color.DKGRAY)
+        tvPrioridad.setPadding(0, 0, 0, 6)
+        infoLayout.addView(tvPrioridad)
 
         if (lista.productos.isNotEmpty()) {
-            val textViewProductos = TextView(this)
-            val productosTexto = lista.productos.take(3).joinToString(", ")
-            val textoCompleto = if (lista.productos.size > 3) {
-                "$productosTexto, ..."
+            val tvProductos = TextView(this)
+            val productosTexto = if (lista.productos.size > 3) {
+                lista.productos.take(3).joinToString(", ") + ", ..."
             } else {
-                productosTexto
+                lista.productos.joinToString(", ")
             }
-            textViewProductos.text = "Productos: $textoCompleto"
-            textViewProductos.textSize = 14f
-            textViewProductos.setTextColor(Color.DKGRAY)
-            card.addView(textViewProductos)
+            tvProductos.text = "Productos: $productosTexto"
+            tvProductos.textSize = 14f
+            tvProductos.setTextColor(Color.DKGRAY)
+            tvProductos.setPadding(0, 0, 0, 6)
+            infoLayout.addView(tvProductos)
         }
+
+        card.addView(infoLayout)
 
         card.setOnClickListener {
             val intent = Intent(this, VerListaActivity::class.java)
