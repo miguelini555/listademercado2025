@@ -17,14 +17,16 @@ import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PantallaHistorialActivity : AppCompatActivity() {
+class histActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_pantalla_historial)
+        setContentView(R.layout.activity_hist)
+
+        Toast.makeText(this, "histActivity cargada", Toast.LENGTH_SHORT).show()
 
         sharedPreferences = getSharedPreferences(
             pantalla_menu.NOMBRE_FICHERO_SHARED_PREFERENCES,
@@ -52,6 +54,7 @@ class PantallaHistorialActivity : AppCompatActivity() {
             try {
                 Json.decodeFromString<List<ListaApp>>(stringGuardado)
             } catch (e: Exception) {
+                Toast.makeText(this, "Error al cargar listas", Toast.LENGTH_SHORT).show()
                 emptyList()
             }
         } else {
@@ -65,15 +68,11 @@ class PantallaHistorialActivity : AppCompatActivity() {
 
         contenedorHistorial.removeAllViews()
 
-        val listasCompletadas = obtenerTodasListas()
-            .filter { it.completada }
-            .sortedByDescending {
-                try {
-                    SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).parse(it.fechaCreacion)
-                } catch (e: Exception) {
-                    Date()
-                }
-            }
+        val todasListas = obtenerTodasListas()
+        Toast.makeText(this, "Total listas: ${todasListas.size}", Toast.LENGTH_SHORT).show()
+
+        val listasCompletadas = todasListas.filter { it.completada }
+        Toast.makeText(this, "Listas completadas: ${listasCompletadas.size}", Toast.LENGTH_SHORT).show()
 
         if (listasCompletadas.isEmpty()) {
             mensajeVacio.visibility = View.VISIBLE
@@ -82,13 +81,21 @@ class PantallaHistorialActivity : AppCompatActivity() {
 
         mensajeVacio.visibility = View.GONE
 
-        listasCompletadas.forEachIndexed { index, lista ->
-            val card = crearCardListaCompletada(lista, index)
+        val listasOrdenadas = listasCompletadas.sortedByDescending {
+            try {
+                SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).parse(it.fechaCreacion)
+            } catch (e: Exception) {
+                Date()
+            }
+        }
+
+        listasOrdenadas.forEachIndexed { index, lista ->
+            val card = crearCardListaCompletada(lista)
             contenedorHistorial.addView(card)
         }
     }
 
-    private fun crearCardListaCompletada(lista: ListaApp, index: Int): LinearLayout {
+    private fun crearCardListaCompletada(lista: ListaApp): LinearLayout {
         val card = LinearLayout(this)
         card.orientation = LinearLayout.VERTICAL
         card.setPadding(20, 20, 20, 20)
@@ -102,38 +109,25 @@ class PantallaHistorialActivity : AppCompatActivity() {
         params.bottomMargin = 16
         card.layoutParams = params
 
-        val fila1 = LinearLayout(this)
-        fila1.orientation = LinearLayout.HORIZONTAL
-        fila1.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
         val textViewNombre = TextView(this)
         textViewNombre.text = lista.nombre
         textViewNombre.textSize = 18f
         textViewNombre.setTextColor(Color.BLACK)
-        textViewNombre.layoutParams = LinearLayout.LayoutParams(
-            0,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            1f
-        )
+        textViewNombre.setPadding(0, 0, 0, 8)
+        card.addView(textViewNombre)
 
-        val textViewCompletada = TextView(this)
-        textViewCompletada.text = "✓ Completada"
-        textViewCompletada.textSize = 14f
-        textViewCompletada.setTextColor(Color.parseColor("#4CAF50"))
-        textViewCompletada.gravity = Gravity.END
-
-        fila1.addView(textViewNombre)
-        fila1.addView(textViewCompletada)
-        card.addView(fila1)
+        val textViewEstado = TextView(this)
+        textViewEstado.text = "✓ Completada"
+        textViewEstado.textSize = 14f
+        textViewEstado.setTextColor(Color.parseColor("#4CAF50"))
+        textViewEstado.setPadding(0, 0, 0, 8)
+        card.addView(textViewEstado)
 
         val textViewFecha = TextView(this)
         textViewFecha.text = "Creada: ${lista.fechaCreacion}"
         textViewFecha.textSize = 14f
         textViewFecha.setTextColor(Color.DKGRAY)
-        textViewFecha.setPadding(0, 8, 0, 8)
+        textViewFecha.setPadding(0, 0, 0, 8)
         card.addView(textViewFecha)
 
         if (lista.fechaLimite != null) {
@@ -156,9 +150,9 @@ class PantallaHistorialActivity : AppCompatActivity() {
             val textViewProductos = TextView(this)
             val productosTexto = lista.productos.take(3).joinToString(", ")
             val textoCompleto = if (lista.productos.size > 3) {
-                "$productosTexto, ..."
+                "$productosTexto, ... (${lista.productos.size} total)"
             } else {
-                productosTexto
+                "$productosTexto (${lista.productos.size} total)"
             }
             textViewProductos.text = "Productos: $textoCompleto"
             textViewProductos.textSize = 14f
@@ -186,12 +180,12 @@ class PantallaHistorialActivity : AppCompatActivity() {
         }
 
         botonInicio.setOnClickListener {
-            val intent = Intent(this, pantalla_menu::class.java)
-            startActivity(intent)
+            finish()
         }
 
         botonAlarma.setOnClickListener {
             cargarHistorial()
+            Toast.makeText(this, "Historial actualizado", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -29,13 +29,11 @@ class VerListaActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_ver_lista)
 
-        // Inicializar SharedPreferences
         sharedPreferences = getSharedPreferences(
             pantalla_menu.NOMBRE_FICHERO_SHARED_PREFERENCES,
             MODE_PRIVATE
         )
 
-        // Obtener ID de la lista desde el Intent
         val listaId = intent.getStringExtra(EXTRA_LISTA_ID)
 
         if (listaId == null) {
@@ -44,7 +42,6 @@ class VerListaActivity : AppCompatActivity() {
             return
         }
 
-        // Buscar la lista por ID
         val lista = buscarListaPorId(listaId)
 
         if (lista == null) {
@@ -55,19 +52,18 @@ class VerListaActivity : AppCompatActivity() {
 
         listaActual = lista
 
-        // ========== CONFIGURAR INTERFAZ ==========
         configurarInterfaz(lista)
 
-        // ========== CONFIGURAR CHECKBOX DE LISTA COMPLETADA ==========
         configurarCheckboxListaCompletada()
 
-        // ========== CONFIGURAR BOTON ELIMINAR LISTA ==========
         configurarBotonEliminarLista()
 
-        // ========== BOTONES DE NAVEGACION ==========
+        configurarBotonGuardarCambios()
+
+        configurarAgregarProducto()
+
         configurarBotonesNavegacion()
 
-        // ========== WINDOW INSETS ==========
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -94,32 +90,31 @@ class VerListaActivity : AppCompatActivity() {
     }
 
     private fun configurarInterfaz(lista: ListaApp) {
-        // Configurar titulo
         val textViewTitulo = findViewById<TextView>(R.id.textViewTituloLista)
         textViewTitulo.text = lista.nombre
 
-        // Configurar fecha limite
         val textViewFechaLimite = findViewById<TextView>(R.id.textViewFechaLimite)
         if (lista.fechaLimite != null) {
-            textViewFechaLimite.text = "Fecha limite: ${lista.fechaLimite}"
+            textViewFechaLimite.text = "Fecha límite: ${lista.fechaLimite}"
         } else {
-            textViewFechaLimite.text = "Sin fecha limite"
+            textViewFechaLimite.text = "Sin fecha límite"
         }
 
-        // Configurar prioridad
         val textViewPrioridad = findViewById<TextView>(R.id.textViewPrioridad)
         textViewPrioridad.text = "Prioridad: ${lista.prioridad}"
 
-        // Configurar fecha de creacion
         val textViewFechaCreacion = findViewById<TextView>(R.id.textViewFechaCreacion)
         textViewFechaCreacion.text = "Creada: ${lista.fechaCreacion}"
 
-        // Configurar productos con checkboxes
+        mostrarProductos()
+    }
+
+    private fun mostrarProductos() {
         val linearLayoutProductos = findViewById<LinearLayout>(R.id.linearLayoutProductos)
         linearLayoutProductos.removeAllViews()
         checkboxesProductos.clear()
 
-        if (lista.productos.isEmpty()) {
+        if (listaActual.productos.isEmpty()) {
             val tvVacio = TextView(this).apply {
                 text = "No hay productos en esta lista"
                 textSize = 16f
@@ -129,14 +124,12 @@ class VerListaActivity : AppCompatActivity() {
             }
             linearLayoutProductos.addView(tvVacio)
         } else {
-            lista.productos.forEachIndexed { index, producto ->
-                // Crear LinearLayout horizontal para cada producto
+            listaActual.productos.forEachIndexed { index, producto ->
                 val productoLayout = LinearLayout(this).apply {
                     orientation = LinearLayout.HORIZONTAL
                     gravity = Gravity.CENTER_VERTICAL
                     setPadding(25, 12, 25, 12)
 
-                    // Alternar colores de fondo
                     if (index % 2 == 0) {
                         setBackgroundColor(Color.parseColor("#F5F5F5"))
                     } else {
@@ -144,7 +137,6 @@ class VerListaActivity : AppCompatActivity() {
                     }
                 }
 
-                // Checkbox para el producto
                 val checkBoxProducto = CheckBox(this).apply {
                     text = producto
                     textSize = 16f
@@ -154,15 +146,16 @@ class VerListaActivity : AppCompatActivity() {
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         1f
                     )
+
+                    if (listaActual.completada) {
+                        isChecked = true
+                    }
                 }
 
-                // Guardar referencia al checkbox
                 checkboxesProductos.add(checkBoxProducto)
 
-                // Agregar checkbox al layout del producto
                 productoLayout.addView(checkBoxProducto)
 
-                // Agregar layout del producto al contenedor principal
                 linearLayoutProductos.addView(productoLayout)
             }
         }
@@ -171,37 +164,25 @@ class VerListaActivity : AppCompatActivity() {
     private fun configurarCheckboxListaCompletada() {
         val checkBoxListaCompletada = findViewById<CheckBox>(R.id.checkBoxListaCompletada)
 
-        // Establecer estado actual de la lista
         checkBoxListaCompletada.isChecked = listaActual.completada
 
-        // Cambiar texto segun estado
         actualizarTextoCheckboxLista(checkBoxListaCompletada)
 
-        // Listener para cuando cambia el estado
         checkBoxListaCompletada.setOnCheckedChangeListener { _, isChecked ->
-            // Actualizar el estado en el objeto
             listaActual = listaActual.copy(completada = isChecked)
 
-            // Actualizar texto
             actualizarTextoCheckboxLista(checkBoxListaCompletada)
 
-            // Si se marca la lista como completada, marcar todos los productos
             if (isChecked) {
                 checkboxesProductos.forEach { checkbox ->
                     checkbox.isChecked = true
                 }
-            }
-
-            // Guardar cambios
-            guardarCambiosLista()
-
-            // Mostrar mensaje
-            val mensaje = if (isChecked) {
-                "Lista marcada como completada"
             } else {
-                "Lista marcada como pendiente"
+                checkboxesProductos.forEach { checkbox ->
+                    checkbox.isChecked = false
+                }
             }
-            Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show()
+
         }
     }
 
@@ -213,6 +194,51 @@ class VerListaActivity : AppCompatActivity() {
         }
     }
 
+    private fun configurarBotonGuardarCambios() {
+        val botonGuardar = findViewById<Button>(R.id.botonGuardarCambios)
+
+        botonGuardar.setOnClickListener {
+            guardarCambiosLista()
+            Toast.makeText(this, "Cambios guardados", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun configurarAgregarProducto() {
+        val editTextNuevoProducto = findViewById<EditText>(R.id.editTextNuevoProducto)
+        val botonAgregar = findViewById<Button>(R.id.botonAgregarProducto)
+
+        botonAgregar.setOnClickListener {
+            val nuevoProducto = editTextNuevoProducto.text.toString().trim()
+
+            if (nuevoProducto.isEmpty()) {
+                Toast.makeText(this, "Escribe un producto", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val productosActualizados = listaActual.productos.toMutableList()
+            productosActualizados.add(nuevoProducto)
+            listaActual = listaActual.copy(productos = productosActualizados)
+
+            editTextNuevoProducto.text.clear()
+
+            mostrarProductos()
+
+            val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(editTextNuevoProducto.windowToken, 0)
+
+            Toast.makeText(this, "Producto añadido", Toast.LENGTH_SHORT).show()
+        }
+
+        editTextNuevoProducto.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                botonAgregar.performClick()
+                true
+            } else {
+                false
+            }
+        }
+    }
+
     private fun eliminarLista() {
         val stringGuardado = sharedPreferences.getString(
             pantalla_menu.NOMBRE_DATO_LISTAS,
@@ -221,26 +247,50 @@ class VerListaActivity : AppCompatActivity() {
 
         if (stringGuardado != null) {
             try {
-                // Obtener todas las listas
                 val todasListas = Json.decodeFromString<List<ListaApp>>(stringGuardado)
 
-                // Filtrar para eliminar la lista actual
                 val listasActualizadas = todasListas.filter { it.id != listaActual.id }
 
-                // Guardar de nuevo
                 val editor = sharedPreferences.edit()
                 val listaString = Json.encodeToString(listasActualizadas)
                 editor.putString(pantalla_menu.NOMBRE_DATO_LISTAS, listaString)
                 editor.apply()
 
-                // Mostrar mensaje
                 Toast.makeText(this, "Lista eliminada", Toast.LENGTH_SHORT).show()
 
-                // Regresar al menu principal
                 finish()
 
             } catch (e: Exception) {
                 Toast.makeText(this, "Error al eliminar lista", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun guardarCambiosLista() {
+        val stringGuardado = sharedPreferences.getString(
+            pantalla_menu.NOMBRE_DATO_LISTAS,
+            "[]"
+        )
+
+        if (stringGuardado != null) {
+            try {
+                val todasListas = Json.decodeFromString<List<ListaApp>>(stringGuardado)
+
+                val listasActualizadas = todasListas.map { lista ->
+                    if (lista.id == listaActual.id) {
+                        listaActual
+                    } else {
+                        lista
+                    }
+                }
+
+                val editor = sharedPreferences.edit()
+                val listaString = Json.encodeToString(listasActualizadas)
+                editor.putString(pantalla_menu.NOMBRE_DATO_LISTAS, listaString)
+                editor.apply()
+
+            } catch (e: Exception) {
+                Toast.makeText(this, "Error al guardar cambios: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -254,38 +304,6 @@ class VerListaActivity : AppCompatActivity() {
         checkBox.text = texto
     }
 
-    private fun guardarCambiosLista() {
-        val stringGuardado = sharedPreferences.getString(
-            pantalla_menu.NOMBRE_DATO_LISTAS,
-            "[]"
-        )
-
-        if (stringGuardado != null) {
-            try {
-                // Obtener todas las listas
-                val todasListas = Json.decodeFromString<List<ListaApp>>(stringGuardado)
-
-                // Reemplazar la lista actualizada
-                val listasActualizadas = todasListas.map { lista ->
-                    if (lista.id == listaActual.id) {
-                        listaActual
-                    } else {
-                        lista
-                    }
-                }
-
-                // Guardar de nuevo
-                val editor = sharedPreferences.edit()
-                val listaString = Json.encodeToString(listasActualizadas)
-                editor.putString(pantalla_menu.NOMBRE_DATO_LISTAS, listaString)
-                editor.apply()
-
-            } catch (e: Exception) {
-                Toast.makeText(this, "Error al guardar cambios: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     private fun configurarBotonesNavegacion() {
         val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
         val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
@@ -297,19 +315,13 @@ class VerListaActivity : AppCompatActivity() {
         }
 
         botonInicio.setOnClickListener {
-            // Regresar al menu principal
-            finish()
+            val intent = Intent(this, pantalla_menu::class.java)
+            startActivity(intent)
         }
 
         botonAlarma.setOnClickListener {
-            val intent = Intent(this, NotificacionesActivity::class.java)
+            val intent = Intent(this, HistorialActivity::class.java)
             startActivity(intent)
         }
-    }
-
-    override fun onBackPressed() {
-        // Guardar cambios antes de regresar
-        guardarCambiosLista()
-        super.onBackPressed()
     }
 }
