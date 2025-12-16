@@ -39,7 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="12dp"
-        android:background="#F5E1A5"
+        android:background="@color/mayonesa"
         app:layout_constraintTop_toBottomOf="@id/barraSuperior"
         app:layout_constraintBottom_toTopOf="@id/bottomBar"
         app:layout_constraintStart_toStartOf="parent"

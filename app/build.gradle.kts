@@ -54,7 +54,6 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    //Implementacion de Serializacion paso 2
     implementation(libs.kotlinx.serialization.json)
 
     implementation("androidx.room:room-runtime:2.8.3")

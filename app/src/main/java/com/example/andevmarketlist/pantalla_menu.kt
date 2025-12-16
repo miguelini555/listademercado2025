@@ -1,6 +1,8 @@
 package com.example.andevmarketlist
 
 import android.content.Intent
+import android.widget.PopupMenu
+import com.google.firebase.auth.FirebaseAuth
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
@@ -38,7 +40,41 @@ class pantalla_menu : AppCompatActivity() {
         val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
         val botonAgregar = findViewById<ImageButton>(R.id.botonAgregar)
 
+        val btnMenu = findViewById<ImageButton>(R.id.btnMenu)
+
         val botonNotificaciones = findViewById<ImageButton>(R.id.botonNotificaciones)
+
+
+
+        btnMenu.setOnClickListener {
+            val popupMenu = PopupMenu(this, btnMenu)
+            popupMenu.menuInflater.inflate(R.menu.menu_popup, popupMenu.menu)
+
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+
+                    R.id.menu_mapa -> {
+                        val intentMapa = Intent(this, mapaActivity::class.java)
+                        startActivity(intentMapa)
+                        true
+                    }
+
+                    R.id.menu_logout -> {
+                        FirebaseAuth.getInstance().signOut()
+                        val intentLogin = Intent(this, LoginActivity::class.java)
+                        intentLogin.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intentLogin)
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+
+            popupMenu.show()
+        }
+
 
         botonNotificaciones.setOnClickListener {
             val intent = Intent(this, NotificacionesActivity::class.java)

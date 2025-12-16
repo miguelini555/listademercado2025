@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5E1A5"
+    android:background="@color/mayonesa"
     tools:context=".NotificacionesActivity">
 
     <LinearLayout
@@ -38,7 +38,7 @@
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#F5E1A5"
+        android:background="@color/mayonesa"
         android:padding="12dp"
         app:layout_constraintTop_toBottomOf="@id/barraSuperior"
         app:layout_constraintBottom_toTopOf="@id/bottomBar"
@@ -58,7 +58,7 @@
                 android:text="Sin listas por completar"
                 android:textSize="18sp"
                 android:gravity="center"
-                android:textColor="#666666"
+                android:textColor="@color/negro"
                 android:padding="40dp"
                 android:visibility="gone"/>
 
@@ -71,7 +71,7 @@
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:orientation="horizontal"
-        android:background="#2b6b60"
+        android:background="@color/verde"
         android:gravity="center"
         android:weightSum="3"
         app:layout_constraintBottom_toBottomOf="parent"
