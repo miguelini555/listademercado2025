@@ -18,8 +18,6 @@
         <activity
             android:name=".histActivity"
             android:exported="false" />
-        <!-- ELIMINAR ESTA LÍNEA DUPLICADA -->
-        <!-- <activity android:name=".HistorialActivity" android:exported="false" /> -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAPEe2AAdNN-vWHVn4ViZljceLa3_nkDmw" />
@@ -33,7 +31,7 @@
             android:exported="false" />
         <activity
             android:name=".VerListaActivity"
-            android:exported="false" /> <!-- DEJAR SOLO UNA DECLARACIÓN DE HistorialActivity -->
+            android:exported="false" />
         <activity
             android:name=".HistorialActivity"
             android:exported="false" />
