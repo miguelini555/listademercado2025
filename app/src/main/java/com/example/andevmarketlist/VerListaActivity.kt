@@ -159,6 +159,7 @@ class VerListaActivity : AppCompatActivity() {
         }
     }
 
+
     private fun configurarBotonEliminarLista() {
         binding.botonEliminarLista.setOnClickListener {
             eliminarLista()
