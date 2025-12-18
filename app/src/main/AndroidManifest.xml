@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 
     <application
         android:allowBackup="true"
@@ -14,26 +16,21 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/every_list_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AnDevMarketList">
+        android:theme="@style/Theme.AnDevMarketList"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".MapaActivity"
+            android:exported="false" />
         <activity
             android:name=".histActivity"
             android:exported="false" />
-        <!-- ELIMINAR ESTA LÍNEA DUPLICADA -->
-        <!-- <activity android:name=".HistorialActivity" android:exported="false" /> -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAPEe2AAdNN-vWHVn4ViZljceLa3_nkDmw" />
-
-        <activity
-            android:name=".mapaActivity"
-            android:exported="false"
-            android:label="@string/title_activity_mapa" />
         <activity
             android:name=".ListaPersistenciaActivity"
             android:exported="false" />
         <activity
             android:name=".VerListaActivity"
-            android:exported="false" /> <!-- DEJAR SOLO UNA DECLARACIÓN DE HistorialActivity -->
+            android:exported="false" />
         <activity
             android:name=".HistorialActivity"
             android:exported="false" />

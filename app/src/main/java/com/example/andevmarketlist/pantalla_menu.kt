@@ -54,7 +54,7 @@ class pantalla_menu : AppCompatActivity() {
                 when (item.itemId) {
 
                     R.id.menu_mapa -> {
-                        val intentMapa = Intent(this, mapaActivity::class.java)
+                        val intentMapa = Intent(this, MapaActivity::class.java)
                         startActivity(intentMapa)
                         true
                     }
