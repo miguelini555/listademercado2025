@@ -6,8 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -47,14 +46,18 @@ class activity_Calendario : AppCompatActivity() {
     }
 
     private fun obtenerTodasListas(): List<ListaApp> {
-        val stringGuardado = sharedPreferences.getString(
+        val stringGuardado: String? = sharedPreferences.getString(
             pantalla_menu.NOMBRE_DATO_LISTAS,
             "[]"
         )
 
-        return try {
-            Json.decodeFromString(stringGuardado ?: "[]")
-        } catch (e: Exception) {
+        return if (stringGuardado != null) {
+            try {
+                Json.decodeFromString<List<ListaApp>>(stringGuardado)
+            } catch (e: Exception) {
+                emptyList()
+            }
+        } else {
             emptyList()
         }
     }
@@ -88,27 +91,32 @@ class activity_Calendario : AppCompatActivity() {
         todasListas.forEach { lista ->
             try {
                 val fechaLista = formatoEntrada.parse(lista.fechaLimite!!)
-                val fechaKey = formatoSalida.format(fechaLista!!)
-                listasPorFecha.getOrPut(fechaKey) { mutableListOf() }.add(lista)
-            } catch (_: Exception) {}
+                val fechaKey = formatoSalida.format(fechaLista)
+
+                if (!listasPorFecha.containsKey(fechaKey)) {
+                    listasPorFecha[fechaKey] = mutableListOf()
+                }
+                listasPorFecha[fechaKey]?.add(lista)
+            } catch (e: Exception) {
+                // Ignorar fechas mal formateadas
+            }
         }
 
-        val fechasOrdenadas = listasPorFecha.keys.sortedBy {
+        val fechasOrdenadas = listasPorFecha.keys.sortedBy { fecha ->
             try {
-                formatoSalida.parse(it)?.time ?: Long.MAX_VALUE
-            } catch (_: Exception) {
+                formatoSalida.parse(fecha)?.time ?: Long.MAX_VALUE
+            } catch (e: Exception) {
                 Long.MAX_VALUE
             }
         }
 
-        fechasOrdenadas.forEach { fecha ->
-            val listas = listasPorFecha[fecha].orEmpty()
+        fechasOrdenadas.forEachIndexed { index, fecha ->
+            val listas = listasPorFecha[fecha] ?: emptyList()
 
             val colorFondo = when {
                 fecha == formatoSalida.format(Date()) -> Color.parseColor("#FFE0E0")
-                fecha == formatoSalida.format(
-                    Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time
-                ) -> Color.parseColor("#FFF0E0")
+                fecha == formatoSalida.format(Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time) ->
+                    Color.parseColor("#FFF0E0")
                 else -> Color.parseColor("#F0F0F0")
             }
 
@@ -122,74 +130,74 @@ class activity_Calendario : AppCompatActivity() {
         listas: List<ListaApp>,
         colorFondo: Int
     ) {
-        val seccion = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(20, 20, 20, 20)
-            setBackgroundColor(colorFondo)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(0, 0, 0, 16)
-            }
-        }
+        val seccion = LinearLayout(this)
+        seccion.orientation = LinearLayout.VERTICAL
+        seccion.setPadding(20, 20, 20, 20)
+        seccion.setBackgroundColor(colorFondo)
 
-        val textViewFecha = TextView(this).apply {
-            text = fecha
-            textSize = 18f
-            setTextColor(Color.BLACK)
-            setTypeface(null, android.graphics.Typeface.BOLD)
-            setPadding(0, 0, 0, 12)
-        }
+        val params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        params.setMargins(0, 0, 0, 16)
+        seccion.layoutParams = params
+
+        val textViewFecha = TextView(this)
+        textViewFecha.text = fecha
+        textViewFecha.textSize = 18f
+        textViewFecha.setTextColor(Color.BLACK)
+        textViewFecha.setTypeface(null, android.graphics.Typeface.BOLD)
+        textViewFecha.setPadding(0, 0, 0, 12)
         seccion.addView(textViewFecha)
 
         if (listas.isEmpty()) {
-            seccion.addView(TextView(this).apply {
-                text = getString(R.string.sin_listas)
-                textSize = 16f
-                setTextColor(Color.GRAY)
-                setPadding(20, 0, 0, 0)
-            })
+            val textViewVacio = TextView(this)
+            textViewVacio.text = "Sin listas"
+            textViewVacio.textSize = 16f
+            textViewVacio.setTextColor(Color.GRAY)
+            textViewVacio.setPadding(20, 0, 0, 0)
+            seccion.addView(textViewVacio)
         } else {
             listas.forEach { lista ->
-                val itemLayout = LinearLayout(this).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    gravity = Gravity.CENTER_VERTICAL
-                    setPadding(20, 8, 0, 8)
-                }
+                val itemLayout = LinearLayout(this)
+                itemLayout.orientation = LinearLayout.HORIZONTAL
+                itemLayout.gravity = Gravity.CENTER_VERTICAL
+                itemLayout.setPadding(20, 8, 0, 8)
 
-                itemLayout.addView(TextView(this).apply {
-                    text = "•"
-                    textSize = 16f
-                    setPadding(0, 0, 12, 0)
-                })
+                val punto = TextView(this)
+                punto.text = "•"
+                punto.textSize = 16f
+                punto.setPadding(0, 0, 12, 0)
+                itemLayout.addView(punto)
 
-                val textViewLista = TextView(this).apply {
-                    text = lista.nombre
-                    textSize = 16f
-                    setTextColor(Color.BLACK)
-                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                    paintFlags = paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
-                    setOnClickListener {
-                        startActivity(
-                            Intent(this@activity_Calendario, VerListaActivity::class.java)
-                                .putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
-                        )
-                    }
+                val textViewLista = TextView(this)
+                textViewLista.text = lista.nombre
+                textViewLista.textSize = 16f
+                textViewLista.setTextColor(Color.BLACK)
+                textViewLista.layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+
+                textViewLista.setOnClickListener {
+                    val intent = Intent(this, VerListaActivity::class.java)
+                    intent.putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
+                    startActivity(intent)
                 }
                 itemLayout.addView(textViewLista)
 
-                itemLayout.addView(TextView(this).apply {
-                    text = " (${lista.prioridad})"
-                    textSize = 14f
-                    setTextColor(
-                        when (lista.prioridad) {
-                            "Alta" -> Color.RED
-                            "Media" -> Color.parseColor("#FF9800")
-                            else -> Color.parseColor("#4CAF50")
-                        }
-                    )
-                })
+                val textViewPrioridad = TextView(this)
+                textViewPrioridad.text = " (${lista.prioridad})"
+                textViewPrioridad.textSize = 14f
+                textViewPrioridad.setTextColor(
+                    when (lista.prioridad) {
+                        "Alta" -> Color.RED
+                        "Media" -> Color.parseColor("#FF9800")
+                        else -> Color.parseColor("#4CAF50")
+                    }
+                )
+                itemLayout.addView(textViewPrioridad)
 
                 seccion.addView(itemLayout)
             }
