@@ -98,6 +98,7 @@ class activity_Calendario : AppCompatActivity() {
                 }
                 listasPorFecha[fechaKey]?.add(lista)
             } catch (e: Exception) {
+                // Ignorar fechas mal formateadas
             }
         }
 
