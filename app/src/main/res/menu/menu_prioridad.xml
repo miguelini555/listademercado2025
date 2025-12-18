@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/prioridad_baja"
+        android:title="@string/prioridad_baja"/>
+
+    <item
+        android:id="@+id/prioridad_media"
+        android:title="@string/prioridad_media"/>
+
+    <item
+        android:id="@+id/prioridad_alta"
+        android:title="@string/prioridad_alta"/>
+
+</menu>

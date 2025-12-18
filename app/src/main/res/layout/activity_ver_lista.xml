@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/beige"
+    tools:context=".VerListaActivity">
+
+    <LinearLayout
+        android:id="@+id/barraSuperior"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center_vertical"
+        android:background="@color/beige"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/textViewTituloLista"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/titulo_detalles_lista"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/beige"
+        app:layout_constraintTop_toBottomOf="@id/barraSuperior"
+        app:layout_constraintBottom_toTopOf="@id/barraInferior"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@android:color/white"
+                android:layout_marginBottom="16dp">
+
+                <CheckBox
+                    android:id="@+id/checkBoxListaCompletada"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/marcar_lista_completada"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="12dp"/>
+
+                <Button
+                    android:id="@+id/botonEliminarLista"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/eliminar_lista"
+                    android:backgroundTint="@color/rojo"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="16dp"/>
+
+                <Button
+                    android:id="@+id/botonGuardarCambios"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/guardar_cambios"
+                    android:backgroundTint="@color/verde"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
+                    android:id="@+id/textViewFechaLimite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/fecha_limite"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/textViewPrioridad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/prioridad"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/textViewFechaCreacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/fecha_creacion"
+                    android:textSize="14sp"
+                    android:textColor="@color/negro"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/productos"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:id="@+id/linearLayoutProductos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@android:color/white"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp"
+                android:background="@android:color/white">
+
+                <EditText
+                    android:id="@+id/editTextNuevoProducto"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/nuevo_producto"
+                    android:background="@color/beige"
+                    android:padding="12dp"
+                    android:maxLines="1"/>
+
+                <Button
+                    android:id="@+id/botonAgregarProducto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+"
+                    android:contentDescription="@string/agregar_producto"
+                    android:backgroundTint="@color/verde"
+                    android:textColor="@android:color/white"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/barraInferior"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:background="@color/beige"
+        android:gravity="center"
+        android:weightSum="3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/botonCalendario"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:src="@drawable/calender_svgrepo_com"
+            android:contentDescription="@string/calendario"/>
+
+        <ImageButton
+            android:id="@+id/botonInicio"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:src="@drawable/home_svgrepo_com"
+            android:contentDescription="@string/inicio"/>
+
+        <ImageButton
+            android:id="@+id/botonAlarma"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:src="@drawable/alarm_clock_svgrepo_com"
+            android:contentDescription="@string/alarma"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
