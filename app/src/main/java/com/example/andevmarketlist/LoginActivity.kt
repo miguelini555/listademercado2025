@@ -1,6 +1,5 @@
 package com.example.andevmarketlist
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -9,10 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.andevmarketlist.databinding.ActivityLoginBinding
-import com.google.android.gms.auth.api.Auth
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.Firebase
 
 class LoginActivity : AppCompatActivity() {
 
@@ -26,18 +24,24 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        auth= Firebase.auth
+        auth = Firebase.auth
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
             insets
         }
 
-        val currentUser=auth.currentUser
-        if(currentUser !=null){
-            val intentUsuarioLogueado = Intent(this, pantalla_menu::class.java)
-            startActivity(intentUsuarioLogueado)
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            startActivity(Intent(this, pantalla_menu::class.java))
+            finish()
+            return
         }
 
         binding.loginButton.setOnClickListener {
@@ -53,26 +57,23 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    fun loginUsuario(
-        correo: String, password:String
-    ){
-        auth.signInWithEmailAndPassword(correo,password)
-            .addOnCompleteListener{ task ->
-                if (task.isSuccessful){
-                    //login exitoso
-                    val intentLogueado= Intent(this, pantalla_menu::class.java)
-                    startActivity(intentLogueado)
-                }else{
-                    //login fallido
+    private fun loginUsuario(correo: String, password: String) {
+        auth.signInWithEmailAndPassword(correo, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    startActivity(Intent(this, pantalla_menu::class.java))
+                    finish()
+                } else {
                     Toast.makeText(
-                        baseContext,
+                        this,
                         "No pudo loguearse",
-                        Toast.LENGTH_LONG,
+                        Toast.LENGTH_LONG
                     ).show()
                 }
             }
     }
-    fun crearUsuario(correo: String, password: String) {
+
+    private fun crearUsuario(correo: String, password: String) {
 
         if (correo.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Campos vacíos", Toast.LENGTH_SHORT).show()
@@ -80,18 +81,28 @@ class LoginActivity : AppCompatActivity() {
         }
 
         if (password.length < 6) {
-            Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "La contraseña debe tener al menos 6 caracteres",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
         auth.createUserWithEmailAndPassword(correo, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Usuario creado correctamente", Toast.LENGTH_SHORT).show()
-
+                    Toast.makeText(
+                        this,
+                        "Usuario creado correctamente",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    val error = task.exception?.message
-                    Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        task.exception?.message ?: "Error al crear usuario",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
     }

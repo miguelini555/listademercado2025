@@ -3,13 +3,14 @@
 
     <item
         android:id="@+id/prioridad_baja"
-        android:title="Baja"/>
+        android:title="@string/prioridad_baja"/>
 
     <item
         android:id="@+id/prioridad_media"
-        android:title="Media"/>
+        android:title="@string/prioridad_media"/>
 
     <item
         android:id="@+id/prioridad_alta"
-        android:title="Alta"/>
+        android:title="@string/prioridad_alta"/>
+
 </menu>

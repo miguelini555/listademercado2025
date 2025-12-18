@@ -6,11 +6,13 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.andevmarketlist.databinding.ActivityNotificacionesBinding
 import com.example.andevmarketlist.dataclases.ListaApp
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -19,12 +21,15 @@ import java.util.*
 
 class NotificacionesActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityNotificacionesBinding
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_notificaciones)
+
+        binding = ActivityNotificacionesBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences(
             pantalla_menu.NOMBRE_FICHERO_SHARED_PREFERENCES,
@@ -32,93 +37,90 @@ class NotificacionesActivity : AppCompatActivity() {
         )
 
         configurarBotonesNavegacion()
-
         cargarNotificaciones()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
             insets
         }
     }
 
     private fun obtenerTodasListas(): List<ListaApp> {
-        val stringGuardado: String? = sharedPreferences.getString(
+        val stringGuardado = sharedPreferences.getString(
             pantalla_menu.NOMBRE_DATO_LISTAS,
             "[]"
         )
 
-        return if (stringGuardado != null) {
-            try {
-                Json.decodeFromString<List<ListaApp>>(stringGuardado)
-            } catch (e: Exception) {
-                emptyList()
-            }
-        } else {
+        return try {
+            Json.decodeFromString(stringGuardado ?: "[]")
+        } catch (e: Exception) {
             emptyList()
         }
     }
 
     private fun cargarNotificaciones() {
-        val contenedorNotificaciones = findViewById<LinearLayout>(R.id.contenedorNotificaciones)
-        val textViewSinNotificaciones = findViewById<TextView>(R.id.textViewSinNotificaciones)
+        val contenedor = binding.contenedorNotificaciones
+        val textoVacio = binding.textViewSinNotificaciones
 
-        for (i in contenedorNotificaciones.childCount - 1 downTo 1) {
-            val child = contenedorNotificaciones.getChildAt(i)
-            if (child.id != R.id.textViewSinNotificaciones) {
-                contenedorNotificaciones.removeViewAt(i)
+        for (i in contenedor.childCount - 1 downTo 1) {
+            val child = contenedor.getChildAt(i)
+            if (child.id != textoVacio.id) {
+                contenedor.removeViewAt(i)
             }
         }
 
         val todasListas = obtenerTodasListas()
-            .filter { !it.completada }
-            .filter { it.fechaLimite != null }
+            .filter { !it.completada && it.fechaLimite != null }
 
-        val tieneFechasLimite = todasListas.isNotEmpty()
-
-        if (!tieneFechasLimite) {
-            textViewSinNotificaciones.visibility = View.VISIBLE
-            textViewSinNotificaciones.text = "Sin listas con fecha límite"
+        if (todasListas.isEmpty()) {
+            textoVacio.visibility = View.VISIBLE
+            textoVacio.text = "Sin listas con fecha límite"
             return
         }
 
-        textViewSinNotificaciones.visibility = View.GONE
+        textoVacio.visibility = View.GONE
 
-        val fechaHoy = Calendar.getInstance()
-        val fechaManana = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }
+        val hoy = Calendar.getInstance()
+        val manana = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }
 
         val formatoSalida = SimpleDateFormat("EEEE d 'de' MMMM", Locale("es", "ES"))
-
         val formatoComparacion = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
+        val formatoEntrada = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
-        val listasHoy = todasListas.filter { lista ->
+        val listasHoy = todasListas.filter {
             try {
-                val fechaLista = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(lista.fechaLimite!!)
-                formatoComparacion.format(fechaLista) == formatoComparacion.format(fechaHoy.time)
+                formatoComparacion.format(formatoEntrada.parse(it.fechaLimite!!)) ==
+                        formatoComparacion.format(hoy.time)
             } catch (e: Exception) {
                 false
             }
         }
 
-        val listasManana = todasListas.filter { lista ->
+        val listasManana = todasListas.filter {
             try {
-                val fechaLista = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(lista.fechaLimite!!)
-                formatoComparacion.format(fechaLista) == formatoComparacion.format(fechaManana.time)
+                formatoComparacion.format(formatoEntrada.parse(it.fechaLimite!!)) ==
+                        formatoComparacion.format(manana.time)
             } catch (e: Exception) {
                 false
             }
         }
 
         crearSeccionFecha(
-            contenedorNotificaciones,
-            "Hoy (${formatoSalida.format(fechaHoy.time)}):",
+            contenedor,
+            "Hoy (${formatoSalida.format(hoy.time)}):",
             listasHoy,
             Color.parseColor("#FFE0E0")
         )
 
         crearSeccionFecha(
-            contenedorNotificaciones,
-            "Mañana (${formatoSalida.format(fechaManana.time)}):",
+            contenedor,
+            "Mañana (${formatoSalida.format(manana.time)}):",
             listasManana,
             Color.parseColor("#FFF0E0")
         )
@@ -130,79 +132,75 @@ class NotificacionesActivity : AppCompatActivity() {
         listas: List<ListaApp>,
         colorFondo: Int
     ) {
-        val seccion = LinearLayout(this)
-        seccion.orientation = LinearLayout.VERTICAL
-        seccion.setPadding(20, 20, 20, 20)
-        seccion.setBackgroundColor(colorFondo)
+        val seccion = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(20, 20, 20, 20)
+            setBackgroundColor(colorFondo)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = 16 }
+        }
 
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.setMargins(0, 0, 0, 16)
-        seccion.layoutParams = params
-
-        val textViewTitulo = TextView(this)
-        textViewTitulo.text = titulo
-        textViewTitulo.textSize = 18f
-        textViewTitulo.setTextColor(Color.BLACK)
-        textViewTitulo.setTypeface(null, android.graphics.Typeface.BOLD)
-        textViewTitulo.setPadding(0, 0, 0, 12)
-        seccion.addView(textViewTitulo)
+        val tituloView = TextView(this).apply {
+            text = titulo
+            textSize = 18f
+            setTextColor(Color.BLACK)
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setPadding(0, 0, 0, 12)
+        }
+        seccion.addView(tituloView)
 
         if (listas.isEmpty()) {
-            val textViewVacio = TextView(this)
-            textViewVacio.text = "Sin eventos"
-            textViewVacio.textSize = 16f
-            textViewVacio.setTextColor(Color.GRAY)
-            textViewVacio.setPadding(20, 0, 0, 0)
-            seccion.addView(textViewVacio)
+            seccion.addView(TextView(this).apply {
+                text = "Sin eventos"
+                textSize = 16f
+                setTextColor(Color.GRAY)
+                setPadding(20, 0, 0, 0)
+            })
         } else {
             listas.forEach { lista ->
-                val itemLayout = LinearLayout(this)
-                itemLayout.orientation = LinearLayout.HORIZONTAL
-                itemLayout.gravity = Gravity.CENTER_VERTICAL
-                itemLayout.setPadding(20, 8, 0, 8)
-
-                val punto = TextView(this)
-                punto.text = "•"
-                punto.textSize = 16f
-                punto.setPadding(0, 0, 12, 0)
-                itemLayout.addView(punto)
-
-                val textViewLista = TextView(this)
-                textViewLista.text = lista.nombre
-                textViewLista.textSize = 16f
-                textViewLista.setTextColor(Color.BLACK)
-                textViewLista.layoutParams = LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
-
-                textViewLista.setOnClickListener {
-                    val intent = Intent(this, VerListaActivity::class.java)
-                    intent.putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
-                    startActivity(intent)
+                val item = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    setPadding(20, 8, 0, 8)
                 }
 
-                textViewLista.paintFlags = textViewLista.paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
+                item.addView(TextView(this).apply {
+                    text = "•"
+                    textSize = 16f
+                    setPadding(0, 0, 12, 0)
+                })
 
-                itemLayout.addView(textViewLista)
-
-                val textViewPrioridad = TextView(this)
-                textViewPrioridad.text = " (${lista.prioridad})"
-                textViewPrioridad.textSize = 14f
-                textViewPrioridad.setTextColor(
-                    when (lista.prioridad) {
-                        "Alta" -> Color.RED
-                        "Media" -> Color.parseColor("#FF9800") // Naranja
-                        else -> Color.parseColor("#4CAF50") // Verde
+                val nombre = TextView(this).apply {
+                    text = lista.nombre
+                    textSize = 16f
+                    setTextColor(Color.BLACK)
+                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                    paintFlags = paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
+                    setOnClickListener {
+                        startActivity(
+                            Intent(this@NotificacionesActivity, VerListaActivity::class.java)
+                                .putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
+                        )
                     }
-                )
-                itemLayout.addView(textViewPrioridad)
+                }
 
-                seccion.addView(itemLayout)
+                item.addView(nombre)
+
+                item.addView(TextView(this).apply {
+                    text = " (${lista.prioridad})"
+                    textSize = 14f
+                    setTextColor(
+                        when (lista.prioridad) {
+                            "Alta" -> Color.RED
+                            "Media" -> Color.parseColor("#FF9800")
+                            else -> Color.parseColor("#4CAF50")
+                        }
+                    )
+                })
+
+                seccion.addView(item)
             }
         }
 
@@ -210,23 +208,16 @@ class NotificacionesActivity : AppCompatActivity() {
     }
 
     private fun configurarBotonesNavegacion() {
-        val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
-        val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
-        val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
-
-        botonCalendario.setOnClickListener {
-            val intent = Intent(this, activity_Calendario::class.java)
-            startActivity(intent)
+        binding.botonCalendario.setOnClickListener {
+            startActivity(Intent(this, activity_Calendario::class.java))
         }
 
-        botonInicio.setOnClickListener {
-            val intent = Intent(this, pantalla_menu::class.java)
-            startActivity(intent)
+        binding.botonInicio.setOnClickListener {
+            startActivity(Intent(this, pantalla_menu::class.java))
         }
 
-        botonAlarma.setOnClickListener {
-            val intent = Intent(this, HistorialActivity::class.java)
-            startActivity(intent)
+        binding.botonAlarma.setOnClickListener {
+            startActivity(Intent(this, HistorialActivity::class.java))
         }
     }
 

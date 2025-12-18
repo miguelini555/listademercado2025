@@ -5,23 +5,28 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
-import android.widget.*
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.andevmarketlist.dataclases.ListaApp
+import com.example.andevmarketlist.databinding.ActivityHistorialBinding
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 class HistorialActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityHistorialBinding
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_historial)
+
+        binding = ActivityHistorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences(
             pantalla_menu.NOMBRE_FICHERO_SHARED_PREFERENCES,
@@ -29,10 +34,9 @@ class HistorialActivity : AppCompatActivity() {
         )
 
         configurarBotonesNavegacion()
-
         cargarHistorial()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -40,135 +44,123 @@ class HistorialActivity : AppCompatActivity() {
     }
 
     private fun obtenerTodasListas(): List<ListaApp> {
-        val stringGuardado: String? = sharedPreferences.getString(
+        val stringGuardado = sharedPreferences.getString(
             pantalla_menu.NOMBRE_DATO_LISTAS,
             "[]"
         )
 
-        return if (stringGuardado != null) {
-            try {
-                Json.decodeFromString<List<ListaApp>>(stringGuardado)
-            } catch (e: Exception) {
-                emptyList()
-            }
-        } else {
+        return try {
+            Json.decodeFromString(stringGuardado ?: "[]")
+        } catch (_: Exception) {
             emptyList()
         }
     }
 
     private fun cargarHistorial() {
-        val linearLayoutContenedor = findViewById<LinearLayout>(R.id.linearLayoutContenedor)
-        linearLayoutContenedor.removeAllViews()
+        val contenedor = binding.linearLayoutContenedor
+        contenedor.removeAllViews()
 
         val listasCompletadas = obtenerTodasListas()
             .filter { it.completada }
             .sortedByDescending { it.fechaCreacion }
 
         if (listasCompletadas.isEmpty()) {
-            val tvMensaje = TextView(this)
-            tvMensaje.text = "No hay listas completadas en el historial"
-            tvMensaje.textSize = 18f
-            tvMensaje.gravity = Gravity.CENTER
-            tvMensaje.setTextColor(Color.GRAY)
-            tvMensaje.setPadding(0, 100, 0, 0)
-
-            linearLayoutContenedor.addView(tvMensaje)
+            val tvMensaje = TextView(this).apply {
+                text = "No hay listas completadas en el historial"
+                textSize = 18f
+                gravity = Gravity.CENTER
+                setTextColor(Color.GRAY)
+                setPadding(0, 100, 0, 0)
+            }
+            contenedor.addView(tvMensaje)
             return
         }
 
         listasCompletadas.forEachIndexed { index, lista ->
-            val card = crearCardListaCompletada(lista, index)
-            linearLayoutContenedor.addView(card)
+            contenedor.addView(crearCardListaCompletada(lista, index))
         }
     }
 
-    private fun crearCardListaCompletada(lista: ListaApp, index: Int): LinearLayout {
-        val card = LinearLayout(this)
-        card.orientation = LinearLayout.VERTICAL
-        card.setPadding(25, 20, 25, 20)
+    private fun crearCardListaCompletada(
+        lista: ListaApp,
+        index: Int
+    ): LinearLayout {
 
-        card.setBackgroundColor(Color.parseColor("#F0F0F0"))
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(25, 20, 25, 20)
+            setBackgroundColor(Color.parseColor("#F0F0F0"))
 
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.setMargins(16, 8, 16, 16)
-        card.layoutParams = params
-
-        val textViewNombre = TextView(this)
-        textViewNombre.text = lista.nombre
-        textViewNombre.textSize = 18f
-        textViewNombre.setTextColor(Color.BLACK)
-        textViewNombre.setTypeface(null, android.graphics.Typeface.BOLD)
-        textViewNombre.setPadding(0, 0, 0, 12)
-        card.addView(textViewNombre)
-
-        val infoLayout = LinearLayout(this)
-        infoLayout.orientation = LinearLayout.VERTICAL
-        infoLayout.setPadding(0, 0, 0, 0)
-
-        val tvEstado = TextView(this)
-        tvEstado.text = "Completada"
-        tvEstado.textSize = 14f
-        tvEstado.setTextColor(Color.parseColor("#4CAF50"))
-        tvEstado.setPadding(0, 0, 0, 6)
-        infoLayout.addView(tvEstado)
-
-        val tvFecha = TextView(this)
-        tvFecha.text = "Creada: ${lista.fechaCreacion}"
-        tvFecha.textSize = 14f
-        tvFecha.setTextColor(Color.DKGRAY)
-        tvFecha.setPadding(0, 0, 0, 6)
-        infoLayout.addView(tvFecha)
-
-        val tvPrioridad = TextView(this)
-        tvPrioridad.text = "Prioridad: ${lista.prioridad}"
-        tvPrioridad.textSize = 14f
-        tvPrioridad.setTextColor(Color.DKGRAY)
-        tvPrioridad.setPadding(0, 0, 0, 6)
-        infoLayout.addView(tvPrioridad)
-
-        if (lista.productos.isNotEmpty()) {
-            val tvProductos = TextView(this)
-            val productosTexto = if (lista.productos.size > 3) {
-                lista.productos.take(3).joinToString(", ") + ", ..."
-            } else {
-                lista.productos.joinToString(", ")
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(16, 8, 16, 16)
             }
-            tvProductos.text = "Productos: $productosTexto"
-            tvProductos.textSize = 14f
-            tvProductos.setTextColor(Color.DKGRAY)
-            tvProductos.setPadding(0, 0, 0, 6)
-            infoLayout.addView(tvProductos)
+
+            addView(TextView(context).apply {
+                text = lista.nombre
+                textSize = 18f
+                setTextColor(Color.BLACK)
+                setTypeface(null, android.graphics.Typeface.BOLD)
+                setPadding(0, 0, 0, 12)
+            })
+
+            val infoLayout = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+            }
+
+            infoLayout.addView(TextView(context).apply {
+                text = "Completada"
+                textSize = 14f
+                setTextColor(Color.parseColor("#4CAF50"))
+            })
+
+            infoLayout.addView(TextView(context).apply {
+                text = "Creada: ${lista.fechaCreacion}"
+                textSize = 14f
+                setTextColor(Color.DKGRAY)
+            })
+
+            infoLayout.addView(TextView(context).apply {
+                text = "Prioridad: ${lista.prioridad}"
+                textSize = 14f
+                setTextColor(Color.DKGRAY)
+            })
+
+            if (lista.productos.isNotEmpty()) {
+                val productosTexto =
+                    if (lista.productos.size > 3)
+                        lista.productos.take(3).joinToString(", ") + ", ..."
+                    else
+                        lista.productos.joinToString(", ")
+
+                infoLayout.addView(TextView(context).apply {
+                    text = "Productos: $productosTexto"
+                    textSize = 14f
+                    setTextColor(Color.DKGRAY)
+                })
+            }
+
+            addView(infoLayout)
+
+            setOnClickListener {
+                startActivity(
+                    Intent(context, VerListaActivity::class.java)
+                        .putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
+                )
+            }
         }
-
-        card.addView(infoLayout)
-
-        card.setOnClickListener {
-            val intent = Intent(this, VerListaActivity::class.java)
-            intent.putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
-            startActivity(intent)
-        }
-
-        return card
     }
 
     private fun configurarBotonesNavegacion() {
-        val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
-        val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
-        val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
-
-        botonCalendario.setOnClickListener {
-            val intent = Intent(this, activity_Calendario::class.java)
-            startActivity(intent)
+        binding.botonCalendario.setOnClickListener {
+            startActivity(Intent(this, activity_Calendario::class.java))
         }
 
-        botonInicio.setOnClickListener {
-            val intent = Intent(this, pantalla_menu::class.java)
-            startActivity(intent)
+        binding.botonInicio.setOnClickListener {
+            startActivity(Intent(this, pantalla_menu::class.java))
         }
-
     }
 
     override fun onResume() {

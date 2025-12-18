@@ -9,18 +9,6 @@
     tools:context=".LoginActivity">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:text="EveryList"
-        android:textSize="50sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/textoUser"
-        />
-
-    <TextView
         android:id="@+id/textoUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

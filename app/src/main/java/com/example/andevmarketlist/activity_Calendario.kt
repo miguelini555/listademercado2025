@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.andevmarketlist.databinding.ActivityCalendarioBinding
 import com.example.andevmarketlist.dataclases.ListaApp
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -19,12 +20,15 @@ import java.util.*
 
 class activity_Calendario : AppCompatActivity() {
 
+    private lateinit var binding: ActivityCalendarioBinding
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_calendario)
+
+        binding = ActivityCalendarioBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences(
             pantalla_menu.NOMBRE_FICHERO_SHARED_PREFERENCES,
@@ -32,10 +36,9 @@ class activity_Calendario : AppCompatActivity() {
         )
 
         configurarBotonesNavegacion()
-
         cargarCalendario()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -60,32 +63,29 @@ class activity_Calendario : AppCompatActivity() {
     }
 
     private fun cargarCalendario() {
-        val contenedorCalendario = findViewById<LinearLayout>(R.id.linearLayoutContenedor)
-        val textViewMensajeVacio = findViewById<TextView>(R.id.textViewMensajeVacio)
+        val contenedorCalendario = binding.linearLayoutContenedor
+        val textViewMensajeVacio = binding.textViewMensajeVacio
 
         for (i in contenedorCalendario.childCount - 1 downTo 1) {
             val child = contenedorCalendario.getChildAt(i)
-            if (child.id != R.id.textViewMensajeVacio) {
+            if (child.id != textViewMensajeVacio.id) {
                 contenedorCalendario.removeViewAt(i)
             }
         }
 
         val todasListas = obtenerTodasListas()
-            .filter { !it.completada }
-            .filter { it.fechaLimite != null }
+            .filter { !it.completada && it.fechaLimite != null }
 
         if (todasListas.isEmpty()) {
             textViewMensajeVacio.visibility = View.VISIBLE
-            textViewMensajeVacio.text = "No hay listas con fecha límite"
+            textViewMensajeVacio.text = getString(R.string.no_hay_listas_fecha)
             return
         }
 
         textViewMensajeVacio.visibility = View.GONE
 
         val listasPorFecha = mutableMapOf<String, MutableList<ListaApp>>()
-
         val formatoSalida = SimpleDateFormat("EEEE d 'de' MMMM", Locale("es", "ES"))
-
         val formatoEntrada = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
         todasListas.forEach { lista ->
@@ -120,12 +120,7 @@ class activity_Calendario : AppCompatActivity() {
                 else -> Color.parseColor("#F0F0F0")
             }
 
-            crearSeccionFecha(
-                contenedorCalendario,
-                fecha,
-                listas,
-                colorFondo
-            )
+            crearSeccionFecha(contenedorCalendario, fecha, listas, colorFondo)
         }
     }
 
@@ -190,9 +185,6 @@ class activity_Calendario : AppCompatActivity() {
                     intent.putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
                     startActivity(intent)
                 }
-
-                textViewLista.paintFlags = textViewLista.paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
-
                 itemLayout.addView(textViewLista)
 
                 val textViewPrioridad = TextView(this)
@@ -215,18 +207,12 @@ class activity_Calendario : AppCompatActivity() {
     }
 
     private fun configurarBotonesNavegacion() {
-        val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
-        val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
-        val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
-
-        botonInicio.setOnClickListener {
-            val intent = Intent(this, pantalla_menu::class.java)
-            startActivity(intent)
+        binding.botonInicio.setOnClickListener {
+            startActivity(Intent(this, pantalla_menu::class.java))
         }
 
-        botonAlarma.setOnClickListener {
-            val intent = Intent(this, HistorialActivity::class.java)
-            startActivity(intent)
+        binding.botonAlarma.setOnClickListener {
+            startActivity(Intent(this, HistorialActivity::class.java))
         }
     }
 

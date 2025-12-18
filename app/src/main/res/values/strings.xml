@@ -1,4 +1,105 @@
 <resources>
-    <string name="title_activity_mapa">mapaActivity</string>
+
     <string name="app_name">EveryList</string>
+    <string name="titulo_app">EveryList</string>
+
+    <string name="error_login">No pudo loguearse</string>
+    <string name="campos_vacios">Campos vacíos</string>
+    <string name="password_corta">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="usuario_creado">Usuario creado correctamente</string>
+    <string name="label_user">Usuario</string>
+    <string name="label_password">Contraseña</string>
+    <string name="hint_email">Correo electrónico</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="action_login">Iniciar sesión</string>
+    <string name="action_create_user">Crear usuario</string>
+
+    <string name="error_generico">Ocurrió un error</string>
+    <string name="sin_listas">Sin listas</string>
+    <string name="no_hay_listas_fecha">No hay listas con fecha límite</string>
+
+    <string name="titulo_crear_lista">Crear Lista</string>
+    <string name="label_nombre_lista">Nombre de la Lista:</string>
+    <string name="hint_nombre_lista">Ej: Compras del Supermercado</string>
+    <string name="label_agregar_productos">Agregar Productos:</string>
+    <string name="hint_nombre_producto">Nombre del Producto</string>
+    <string name="boton_agregar">OK</string>
+    <string name="boton_fecha_limite">Seleccionar Fecha Límite</string>
+    <string name="boton_guardar_lista">Guardar Lista</string>
+    <string name="ingresa_producto">Ingresa un producto primero</string>
+    <string name="ingresa_nombre_lista">Ingresa un nombre para la lista</string>
+    <string name="agrega_producto">Agrega al menos un producto</string>
+    <string name="lista_guardada">Lista guardada</string>
+
+    <string name="prioridad_baja">Baja</string>
+    <string name="prioridad_media">Media</string>
+    <string name="prioridad_alta">Alta</string>
+
+    <string name="texto_prioridad_baja">Prioridad: Baja</string>
+    <string name="texto_prioridad_media">Prioridad: Media</string>
+    <string name="texto_prioridad_alta">Prioridad: Alta</string>
+
+    <string name="fecha_seleccionada">Fecha: %1$s</string>
+    <string name="fecha_limite_formato">Fecha límite: %1$s</string>
+    <string name="fecha_limite_sin">Sin fecha límite</string>
+    <string name="fecha_creacion_formato">Creada: %1$s</string>
+
+    <string name="titulo_detalles_lista">Detalles de la Lista</string>
+    <string name="marcar_lista_completada">Marcar lista como completada</string>
+    <string name="eliminar_lista">Eliminar Lista</string>
+    <string name="guardar_cambios">Guardar Cambios</string>
+    <string name="productos">PRODUCTOS</string>
+    <string name="nuevo_producto">Nuevo producto</string>
+    <string name="producto_anadido">Producto añadido</string>
+    <string name="cambios_guardados">Cambios guardados</string>
+    <string name="lista_eliminada">Lista eliminada</string>
+    <string name="lista_vacia">No hay productos en esta lista</string>
+
+    <string name="titulo_calendario">Calendario</string>
+    <string name="mensaje_calendario_vacio">No hay listas con fecha límite</string>
+    <string name="fecha_ejemplo">Martes 25 de Noviembre</string>
+
+    <string name="titulo_historial">Historial de Listas</string>
+    <string name="mensaje_historial_vacio">No hay listas completadas en el historial</string>
+
+    <string name="menu_mapa">Mapa</string>
+    <string name="menu_logout">Cerrar sesión</string>
+    <string name="boton_cerrar_sesion">Cerrar sesión</string>
+
+    <string name="desc_boton_calendario">Ir al calendario</string>
+    <string name="desc_boton_inicio">Ir al inicio</string>
+    <string name="desc_boton_alarma">Ver historial</string>
+    <string name="desc_boton_historial">Ir al historial</string>
+    <string name="desc_boton_notificaciones">Ir a notificaciones</string>
+    <string name="desc_boton_menu">Abrir menú</string>
+    <string name="desc_boton_agregar">Agregar nueva lista</string>
+    <string name="desc_icono_calendario">Icono de calendario</string>
+    <string name="desc_icono_historial">Icono de historial</string>
+    <string name="desc_icono_notificaciones">Icono de notificaciones</string>
+    <string name="desc_web_map">Mapa de tiendas cercanas</string>
+
+
+
+    <string name="logo_app">Logo de la aplicación</string>
+
+    <string name="titulo_notificaciones">NOTIFICACIONES</string>
+    <string name="sin_notificaciones">Sin listas por completar</string>
+
+    <string name="titulo_historial_listas">Historial de Listas</string>
+    <string name="historial_vacio">No hay listas completadas en el historial</string>
+
+    <string name="boton_prioridad_media">Prioridad: Media</string>
+
+    <string name="fecha_limite">Fecha límite:</string>
+    <string name="prioridad">Prioridad:</string>
+    <string name="fecha_creacion">Creada:</string>
+    <string name="agregar_producto">Agregar producto</string>
+
+    <string name="calendario">Calendario</string>
+    <string name="inicio">Inicio</string>
+    <string name="alarma">Alarma</string>
+
+    <string name="desc_boton_cerrar_sesion">Cerrar sesión del usuario</string>
+
+
 </resources>

@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Historial de Listas"
+            android:text="@string/titulo_historial"
             android:textSize="22sp"
             android:textStyle="bold"
             android:maxLines="1"
@@ -55,14 +55,12 @@
                 android:id="@+id/textViewMensajeVacio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="No hay listas completadas en el historial"
+                android:text="@string/mensaje_historial_vacio"
                 android:textSize="18sp"
                 android:gravity="center"
                 android:textColor="#666666"
                 android:padding="40dp"
                 android:visibility="gone"/>
-
-
         </LinearLayout>
     </ScrollView>
 
@@ -85,7 +83,8 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:padding="6dp"
-            android:src="@drawable/calender_svgrepo_com"/>
+            android:src="@drawable/calender_svgrepo_com"
+            android:contentDescription="@string/desc_boton_calendario"/>
 
         <ImageButton
             android:id="@+id/botonInicio"
@@ -94,7 +93,8 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:padding="6dp"
-            android:src="@drawable/home_svgrepo_com"/>
+            android:src="@drawable/home_svgrepo_com"
+            android:contentDescription="@string/desc_boton_inicio"/>
 
         <ImageButton
             android:id="@+id/botonAlarma"
@@ -103,7 +103,8 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:padding="6dp"
-            android:src="@drawable/alarm_clock_svgrepo_com"/>
+            android:src="@drawable/alarm_clock_svgrepo_com"
+            android:contentDescription="@string/desc_boton_historial"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

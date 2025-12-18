@@ -6,11 +6,13 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.andevmarketlist.databinding.ActivityPantallaHistorialBinding
 import com.example.andevmarketlist.dataclases.ListaApp
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -19,12 +21,15 @@ import java.util.*
 
 class PantallaHistorialActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityPantallaHistorialBinding
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_pantalla_historial)
+
+        binding = ActivityPantallaHistorialBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences(
             pantalla_menu.NOMBRE_FICHERO_SHARED_PREFERENCES,
@@ -32,44 +37,45 @@ class PantallaHistorialActivity : AppCompatActivity() {
         )
 
         configurarBotonesNavegacion()
-
         cargarHistorial()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
             insets
         }
     }
 
     private fun obtenerTodasListas(): List<ListaApp> {
-        val stringGuardado: String? = sharedPreferences.getString(
+        val stringGuardado = sharedPreferences.getString(
             pantalla_menu.NOMBRE_DATO_LISTAS,
             "[]"
         )
 
-        return if (stringGuardado != null) {
-            try {
-                Json.decodeFromString<List<ListaApp>>(stringGuardado)
-            } catch (e: Exception) {
-                emptyList()
-            }
-        } else {
+        return try {
+            Json.decodeFromString(stringGuardado ?: "[]")
+        } catch (e: Exception) {
             emptyList()
         }
     }
 
     private fun cargarHistorial() {
-        val contenedorHistorial = findViewById<LinearLayout>(R.id.contenedorHistorial)
-        val mensajeVacio = findViewById<TextView>(R.id.textViewMensajeVacio)
+        val contenedor = binding.contenedorHistorial
+        val mensajeVacio = binding.textViewMensajeVacio
 
-        contenedorHistorial.removeAllViews()
+        contenedor.removeAllViews()
 
         val listasCompletadas = obtenerTodasListas()
             .filter { it.completada }
             .sortedByDescending {
                 try {
-                    SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).parse(it.fechaCreacion)
+                    SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                        .parse(it.fechaCreacion)
                 } catch (e: Exception) {
                     Date()
                 }
@@ -84,113 +90,109 @@ class PantallaHistorialActivity : AppCompatActivity() {
 
         listasCompletadas.forEachIndexed { index, lista ->
             val card = crearCardListaCompletada(lista, index)
-            contenedorHistorial.addView(card)
+            contenedor.addView(card)
         }
     }
 
-    private fun crearCardListaCompletada(lista: ListaApp, index: Int): LinearLayout {
-        val card = LinearLayout(this)
-        card.orientation = LinearLayout.VERTICAL
-        card.setPadding(20, 20, 20, 20)
+    private fun crearCardListaCompletada(
+        lista: ListaApp,
+        index: Int
+    ): LinearLayout {
 
-        card.setBackgroundColor(Color.parseColor("#E8E8E8"))
-
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.bottomMargin = 16
-        card.layoutParams = params
-
-        val fila1 = LinearLayout(this)
-        fila1.orientation = LinearLayout.HORIZONTAL
-        fila1.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        val textViewNombre = TextView(this)
-        textViewNombre.text = lista.nombre
-        textViewNombre.textSize = 18f
-        textViewNombre.setTextColor(Color.BLACK)
-        textViewNombre.layoutParams = LinearLayout.LayoutParams(
-            0,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            1f
-        )
-
-        val textViewCompletada = TextView(this)
-        textViewCompletada.text = "✓ Completada"
-        textViewCompletada.textSize = 14f
-        textViewCompletada.setTextColor(Color.parseColor("#4CAF50"))
-        textViewCompletada.gravity = Gravity.END
-
-        fila1.addView(textViewNombre)
-        fila1.addView(textViewCompletada)
-        card.addView(fila1)
-
-        val textViewFecha = TextView(this)
-        textViewFecha.text = "Creada: ${lista.fechaCreacion}"
-        textViewFecha.textSize = 14f
-        textViewFecha.setTextColor(Color.DKGRAY)
-        textViewFecha.setPadding(0, 8, 0, 8)
-        card.addView(textViewFecha)
-
-        if (lista.fechaLimite != null) {
-            val textViewFechaLimite = TextView(this)
-            textViewFechaLimite.text = "Fecha limite: ${lista.fechaLimite}"
-            textViewFechaLimite.textSize = 14f
-            textViewFechaLimite.setTextColor(Color.DKGRAY)
-            textViewFechaLimite.setPadding(0, 0, 0, 8)
-            card.addView(textViewFechaLimite)
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(20, 20, 20, 20)
+            setBackgroundColor(Color.parseColor("#E8E8E8"))
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = 16 }
         }
 
-        val textViewPrioridad = TextView(this)
-        textViewPrioridad.text = "Prioridad: ${lista.prioridad}"
-        textViewPrioridad.textSize = 14f
-        textViewPrioridad.setTextColor(Color.DKGRAY)
-        textViewPrioridad.setPadding(0, 0, 0, 8)
-        card.addView(textViewPrioridad)
+        val fila1 = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        val nombre = TextView(this).apply {
+            text = lista.nombre
+            textSize = 18f
+            setTextColor(Color.BLACK)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+
+        val completada = TextView(this).apply {
+            text = "✓ Completada"
+            textSize = 14f
+            setTextColor(Color.parseColor("#4CAF50"))
+            gravity = Gravity.END
+        }
+
+        fila1.addView(nombre)
+        fila1.addView(completada)
+        card.addView(fila1)
+
+        card.addView(TextView(this).apply {
+            text = "Creada: ${lista.fechaCreacion}"
+            textSize = 14f
+            setTextColor(Color.DKGRAY)
+            setPadding(0, 8, 0, 8)
+        })
+
+        lista.fechaLimite?.let {
+            card.addView(TextView(this).apply {
+                text = "Fecha límite: $it"
+                textSize = 14f
+                setTextColor(Color.DKGRAY)
+                setPadding(0, 0, 0, 8)
+            })
+        }
+
+        card.addView(TextView(this).apply {
+            text = "Prioridad: ${lista.prioridad}"
+            textSize = 14f
+            setTextColor(Color.DKGRAY)
+            setPadding(0, 0, 0, 8)
+        })
 
         if (lista.productos.isNotEmpty()) {
-            val textViewProductos = TextView(this)
             val productosTexto = lista.productos.take(3).joinToString(", ")
-            val textoCompleto = if (lista.productos.size > 3) {
+            val textoFinal = if (lista.productos.size > 3) {
                 "$productosTexto, ..."
             } else {
                 productosTexto
             }
-            textViewProductos.text = "Productos: $textoCompleto"
-            textViewProductos.textSize = 14f
-            textViewProductos.setTextColor(Color.DKGRAY)
-            card.addView(textViewProductos)
+
+            card.addView(TextView(this).apply {
+                text = "Productos: $textoFinal"
+                textSize = 14f
+                setTextColor(Color.DKGRAY)
+            })
         }
 
         card.setOnClickListener {
-            val intent = Intent(this, VerListaActivity::class.java)
-            intent.putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
-            startActivity(intent)
+            startActivity(
+                Intent(this, VerListaActivity::class.java)
+                    .putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
+            )
         }
 
         return card
     }
 
     private fun configurarBotonesNavegacion() {
-        val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
-        val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
-        val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
-
-        botonCalendario.setOnClickListener {
-            val intent = Intent(this, activity_Calendario::class.java)
-            startActivity(intent)
+        binding.botonCalendario.setOnClickListener {
+            startActivity(Intent(this, activity_Calendario::class.java))
         }
 
-        botonInicio.setOnClickListener {
-            val intent = Intent(this, pantalla_menu::class.java)
-            startActivity(intent)
+        binding.botonInicio.setOnClickListener {
+            startActivity(Intent(this, pantalla_menu::class.java))
         }
 
-        botonAlarma.setOnClickListener {
+        binding.botonAlarma.setOnClickListener {
             cargarHistorial()
         }
     }

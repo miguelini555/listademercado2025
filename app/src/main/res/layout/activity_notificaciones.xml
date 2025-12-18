@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -15,24 +16,26 @@
         android:orientation="horizontal"
         android:padding="10dp"
         android:gravity="center_vertical"
-        android:background="#2b6b60"
+        android:background="@color/verde"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
+            android:id="@+id/textTituloNotificaciones"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="NOTIFICACIONES"
+            android:text="@string/titulo_notificaciones"
             android:textSize="28sp"
             android:textStyle="bold" />
 
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/notification_bell_svgrepo_com" />
+            android:src="@drawable/notification_bell_svgrepo_com"
+            android:contentDescription="@string/desc_icono_notificaciones"/>
     </LinearLayout>
 
     <ScrollView
@@ -55,13 +58,12 @@
                 android:id="@+id/textViewSinNotificaciones"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sin listas por completar"
+                android:text="@string/sin_notificaciones"
                 android:textSize="18sp"
                 android:gravity="center"
                 android:textColor="@color/negro"
                 android:padding="40dp"
                 android:visibility="gone"/>
-
 
         </LinearLayout>
     </ScrollView>
@@ -85,7 +87,8 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:padding="6dp"
-            android:src="@drawable/calender_svgrepo_com"/>
+            android:src="@drawable/calender_svgrepo_com"
+            android:contentDescription="@string/desc_boton_calendario"/>
 
         <ImageButton
             android:id="@+id/botonInicio"
@@ -94,7 +97,8 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:padding="6dp"
-            android:src="@drawable/home_svgrepo_com"/>
+            android:src="@drawable/home_svgrepo_com"
+            android:contentDescription="@string/desc_boton_inicio"/>
 
         <ImageButton
             android:id="@+id/botonAlarma"
@@ -103,7 +107,8 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:padding="6dp"
-            android:src="@drawable/alarm_clock_svgrepo_com"/>
+            android:src="@drawable/alarm_clock_svgrepo_com"
+            android:contentDescription="@string/desc_boton_historial"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
