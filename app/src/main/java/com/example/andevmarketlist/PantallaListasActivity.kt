@@ -4,11 +4,14 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.widget.*
+import android.widget.PopupMenu
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.andevmarketlist.databinding.ActivityPantallaListasBinding
 import com.example.andevmarketlist.dataclases.ListaApp
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -17,124 +20,133 @@ import java.util.*
 
 class PantallaListasActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityPantallaListasBinding
     private lateinit var sharedPreferences: SharedPreferences
+
     private val productosList = mutableListOf<String>()
     private var fechaLimiteSeleccionada: String? = null
     private var prioridadSeleccionada: String = "Media"
 
     companion object {
-        val NOMBRE_FICHERO_SHARED_PREFERENCES = "MarketListApp"
-        val NOMBRE_DATO_LISTAS = "DatoListas"
+        const val NOMBRE_FICHERO_SHARED_PREFERENCES = "MarketListApp"
+        const val NOMBRE_DATO_LISTAS = "DatoListas"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_pantalla_listas)
+
+        binding = ActivityPantallaListasBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences(
             NOMBRE_FICHERO_SHARED_PREFERENCES,
             MODE_PRIVATE
         )
 
-        val botonFecha = findViewById<Button>(R.id.button_fecha)
-        botonFecha.setOnClickListener {
-            val calendario = Calendar.getInstance()
-            val anio = calendario.get(Calendar.YEAR)
-            val mes = calendario.get(Calendar.MONTH)
-            val dia = calendario.get(Calendar.DAY_OF_MONTH)
+        configurarFecha()
+        configurarPrioridad()
+        configurarBotonesNavegacion()
+        configurarAgregarProducto()
+        configurarGuardarLista()
 
-            val datePicker = DatePickerDialog(
-                this,
-                { _, year, month, dayOfMonth ->
-                    val mesReal = month + 1
-                    fechaLimiteSeleccionada = "%02d/%02d/%04d".format(dayOfMonth, mesReal, year)
-                    botonFecha.text = "Fecha: $fechaLimiteSeleccionada"
-                },
-                anio,
-                mes,
-                dia
-            )
-            datePicker.show()
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
             insets
         }
+    }
 
-        val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
-        val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
-        val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
-        val botonGuardar = findViewById<Button>(R.id.button_guardar)
+    private fun configurarFecha() {
+        binding.buttonFecha.setOnClickListener {
+            val calendario = Calendar.getInstance()
 
-        val editTextProducto = findViewById<EditText>(R.id.edittext_nombreproducto)
-        val listaProducts = findViewById<LinearLayout>(R.id.listaProducts)
-        val botonAgregar = findViewById<Button>(R.id.button_agregar)
-        val editNombreLista = findViewById<EditText>(R.id.edittext_nombrelista)
-
-        botonCalendario.setOnClickListener {
-            val intent = Intent(this, activity_Calendario::class.java)
-            startActivity(intent)
+            DatePickerDialog(
+                this,
+                { _, year, month, day ->
+                    val mesReal = month + 1
+                    fechaLimiteSeleccionada =
+                        "%02d/%02d/%04d".format(day, mesReal, year)
+                    binding.buttonFecha.text = "Fecha: $fechaLimiteSeleccionada"
+                },
+                calendario.get(Calendar.YEAR),
+                calendario.get(Calendar.MONTH),
+                calendario.get(Calendar.DAY_OF_MONTH)
+            ).show()
         }
+    }
 
-        botonInicio.setOnClickListener {
-            val intent = Intent(this, pantalla_menu::class.java)
-            startActivity(intent)
-        }
-
-        botonAlarma.setOnClickListener {
-            val intent = Intent(this, NotificacionesActivity::class.java)
-            startActivity(intent)
-        }
-
-        botonGuardar.setOnClickListener {
-            val nombreLista = editNombreLista.text.toString().trim()
-            guardarListaEnSharedPreferences(nombreLista)
-        }
-
-        botonAgregar.setOnClickListener {
-            val texto = editTextProducto.text.toString().trim()
-
-            if (texto.isEmpty()) {
-                Toast.makeText(this, "Ingresa un producto primero", Toast.LENGTH_SHORT).show()
-            } else {
-                productosList.add(texto)
-
-                val nuevoProducto = TextView(this)
-                nuevoProducto.text = "- $texto"
-                nuevoProducto.textSize = 18f
-                nuevoProducto.setPadding(10, 10, 10, 10)
-
-                listaProducts.addView(nuevoProducto)
-                editTextProducto.text.clear()
-            }
-        }
-
-        val botonPrioridad = findViewById<Button>(R.id.button_prioridad)
-        botonPrioridad.setOnClickListener { view ->
+    private fun configurarPrioridad() {
+        binding.buttonPrioridad.setOnClickListener { view ->
             val popup = PopupMenu(this, view)
             popup.menuInflater.inflate(R.menu.menu_prioridad, popup.menu)
 
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.prioridad_baja -> {
-                        botonPrioridad.text = "Prioridad: Baja"
                         prioridadSeleccionada = "Baja"
+                        binding.buttonPrioridad.text = "Prioridad: Baja"
                     }
                     R.id.prioridad_media -> {
-                        botonPrioridad.text = "Prioridad: Media"
                         prioridadSeleccionada = "Media"
+                        binding.buttonPrioridad.text = "Prioridad: Media"
                     }
                     R.id.prioridad_alta -> {
-                        botonPrioridad.text = "Prioridad: Alta"
                         prioridadSeleccionada = "Alta"
+                        binding.buttonPrioridad.text = "Prioridad: Alta"
                     }
                 }
                 true
             }
             popup.show()
+        }
+    }
+
+    private fun configurarBotonesNavegacion() {
+        binding.botonCalendario.setOnClickListener {
+            startActivity(Intent(this, activity_Calendario::class.java))
+        }
+
+        binding.botonInicio.setOnClickListener {
+            startActivity(Intent(this, pantalla_menu::class.java))
+        }
+
+        binding.botonAlarma.setOnClickListener {
+            startActivity(Intent(this, NotificacionesActivity::class.java))
+        }
+    }
+
+    private fun configurarAgregarProducto() {
+        binding.buttonAgregar.setOnClickListener {
+            val texto = binding.edittextNombreproducto.text.toString().trim()
+
+            if (texto.isEmpty()) {
+                Toast.makeText(this, "Ingresa un producto primero", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            productosList.add(texto)
+
+            val nuevoProducto = TextView(this).apply {
+                text = "- $texto"
+                textSize = 18f
+                setPadding(10, 10, 10, 10)
+            }
+
+            binding.listaProducts.addView(nuevoProducto)
+            binding.edittextNombreproducto.text.clear()
+        }
+    }
+
+    private fun configurarGuardarLista() {
+        binding.buttonGuardar.setOnClickListener {
+            val nombreLista = binding.edittextNombrelista.text.toString().trim()
+            guardarListaEnSharedPreferences(nombreLista)
         }
     }
 
@@ -149,8 +161,6 @@ class PantallaListasActivity : AppCompatActivity() {
             return
         }
 
-        val editor = sharedPreferences.edit()
-
         val listasActuales = obtenerListasGuardadas()
 
         val nuevaLista = ListaApp(
@@ -159,47 +169,35 @@ class PantallaListasActivity : AppCompatActivity() {
             fechaLimite = fechaLimiteSeleccionada,
             prioridad = prioridadSeleccionada,
             productos = productosList.toList(),
-            fechaCreacion = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date()),
+            fechaCreacion = SimpleDateFormat(
+                "dd/MM/yyyy HH:mm",
+                Locale.getDefault()
+            ).format(Date()),
             completada = false
         )
 
         val todasListas = listasActuales + nuevaLista
         val listaString = Json.encodeToString(todasListas)
 
-        editor.putString(NOMBRE_DATO_LISTAS, listaString)
-        editor.apply()
+        sharedPreferences.edit()
+            .putString(NOMBRE_DATO_LISTAS, listaString)
+            .apply()
 
         Toast.makeText(this, "Lista guardada", Toast.LENGTH_SHORT).show()
-
-        val intent = Intent(this, pantalla_menu::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, pantalla_menu::class.java))
+        finish()
     }
 
     private fun obtenerListasGuardadas(): List<ListaApp> {
-        val stringGuardado: String? = sharedPreferences.getString(
+        val stringGuardado = sharedPreferences.getString(
             NOMBRE_DATO_LISTAS,
             "[]"
         )
 
-        return if (stringGuardado != null) {
-            try {
-                Json.decodeFromString<List<ListaApp>>(stringGuardado)
-            } catch (e: Exception) {
-                emptyList()
-            }
-        } else {
+        return try {
+            Json.decodeFromString(stringGuardado ?: "[]")
+        } catch (e: Exception) {
             emptyList()
         }
-    }
-
-    private fun guardarDatosSharedPreferences(nombreDelDato: String, datoAGuardar: String) {
-        val editor = sharedPreferences.edit()
-        editor.putString(nombreDelDato, datoAGuardar)
-        editor.apply()
-    }
-
-    private fun guardarDatosSharedPreferences(listas: List<ListaApp>) {
-        val listaString = Json.encodeToString(listas)
-        guardarDatosSharedPreferences(NOMBRE_DATO_LISTAS, listaString)
     }
 }

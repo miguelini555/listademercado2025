@@ -1,71 +1,81 @@
 package com.example.andevmarketlist
 
 import android.content.Intent
-import android.widget.PopupMenu
-import com.google.firebase.auth.FirebaseAuth
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
-import android.widget.*
+import android.widget.GridLayout
+import android.widget.LinearLayout
+import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.andevmarketlist.databinding.ActivityPantallaMenuBinding
 import com.example.andevmarketlist.dataclases.ListaApp
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 class pantalla_menu : AppCompatActivity() {
 
+    private lateinit var binding: ActivityPantallaMenuBinding
     private lateinit var sharedPreferences: SharedPreferences
 
     companion object {
-        val NOMBRE_FICHERO_SHARED_PREFERENCES = "MarketListApp"
-        val NOMBRE_DATO_LISTAS = "DatoListas"
+        const val NOMBRE_FICHERO_SHARED_PREFERENCES = "MarketListApp"
+        const val NOMBRE_DATO_LISTAS = "DatoListas"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_pantalla_menu)
+
+        binding = ActivityPantallaMenuBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences(
             NOMBRE_FICHERO_SHARED_PREFERENCES,
             MODE_PRIVATE
         )
 
-        val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
-        val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
-        val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
-        val botonAgregar = findViewById<ImageButton>(R.id.botonAgregar)
+        configurarMenuPopup()
+        configurarBotones()
+        cargarListasEnGrid()
 
-        val btnMenu = findViewById<ImageButton>(R.id.btnMenu)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
+            insets
+        }
+    }
 
-        val botonNotificaciones = findViewById<ImageButton>(R.id.botonNotificaciones)
-
-
-
-        btnMenu.setOnClickListener {
-            val popupMenu = PopupMenu(this, btnMenu)
+    private fun configurarMenuPopup() {
+        binding.btnMenu.setOnClickListener {
+            val popupMenu = PopupMenu(this, binding.btnMenu)
             popupMenu.menuInflater.inflate(R.menu.menu_popup, popupMenu.menu)
 
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
 
-
                     R.id.menu_mapa -> {
-                        val intentMapa = Intent(this, MapaActivity::class.java)
-                        startActivity(intentMapa)
+                        startActivity(Intent(this, MapaActivity::class.java))
                         true
                     }
 
                     R.id.menu_logout -> {
                         FirebaseAuth.getInstance().signOut()
-                        val intentLogin = Intent(this, LoginActivity::class.java)
-                        intentLogin.flags =
+                        val intent = Intent(this, LoginActivity::class.java)
+                        intent.flags =
                             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intentLogin)
+                        startActivity(intent)
                         true
                     }
 
@@ -75,67 +85,58 @@ class pantalla_menu : AppCompatActivity() {
 
             popupMenu.show()
         }
+    }
 
+    private fun configurarBotones() {
 
-        botonNotificaciones.setOnClickListener {
-            val intent = Intent(this, NotificacionesActivity::class.java)
-            startActivity(intent)
+        binding.botonNotificaciones.setOnClickListener {
+            startActivity(Intent(this, NotificacionesActivity::class.java))
         }
 
-        botonCalendario.setOnClickListener {
-            val intent = Intent(this, activity_Calendario::class.java)
-            startActivity(intent)
+        binding.botonCalendario.setOnClickListener {
+            startActivity(Intent(this, activity_Calendario::class.java))
         }
 
-        botonAgregar.setOnClickListener {
-            val intent = Intent(this, PantallaListasActivity::class.java)
-            startActivity(intent)
+        binding.botonAgregar.setOnClickListener {
+            startActivity(Intent(this, PantallaListasActivity::class.java))
         }
 
-        botonAlarma.setOnClickListener {
-            val intent = Intent(this, HistorialActivity::class.java)
-            startActivity(intent)
+        binding.botonAlarma.setOnClickListener {
+            startActivity(Intent(this, HistorialActivity::class.java))
         }
 
-        cargarListasEnGrid()
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        binding.botonInicio.setOnClickListener {
+            cargarListasEnGrid()
         }
     }
 
     private fun obtenerTodasListas(): List<ListaApp> {
-        val stringGuardado: String? = sharedPreferences.getString(
+        val stringGuardado = sharedPreferences.getString(
             NOMBRE_DATO_LISTAS,
             "[]"
         )
 
-        return if (stringGuardado != null) {
-            try {
-                Json.decodeFromString<List<ListaApp>>(stringGuardado)
-            } catch (e: Exception) {
-                emptyList()
-            }
-        } else {
+        return try {
+            Json.decodeFromString(stringGuardado ?: "[]")
+        } catch (e: Exception) {
             emptyList()
         }
     }
 
     private fun cargarListasEnGrid() {
-        val gridListas = findViewById<GridLayout>(R.id.gridListas)
-        gridListas.removeAllViews()
+        val grid = binding.gridListas
+        grid.removeAllViews()
 
         val listas = obtenerTodasListas()
             .filter { !it.completada }
             .sortedByDescending { it.fechaCreacion }
 
-        gridListas.columnCount = 2
-        gridListas.rowCount = GridLayout.UNDEFINED
+        grid.columnCount = 2
+        grid.rowCount = GridLayout.UNDEFINED
 
         listas.forEachIndexed { index, lista ->
             val card = crearCardLista(lista)
+
             val params = GridLayout.LayoutParams().apply {
                 width = 0
                 height = 300
@@ -143,48 +144,51 @@ class pantalla_menu : AppCompatActivity() {
                 rowSpec = GridLayout.spec(index / 2, 1f)
                 setMargins(4, 4, 4, 4)
             }
+
             card.layoutParams = params
-            gridListas.addView(card)
+            grid.addView(card)
         }
     }
 
     private fun crearCardLista(lista: ListaApp): LinearLayout {
-        val card = LinearLayout(this)
-        card.orientation = LinearLayout.VERTICAL
-        card.gravity = Gravity.CENTER
-        card.setPadding(16, 16, 16, 16)
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(16, 16, 16, 16)
 
-        when (lista.prioridad) {
-            "Alta" -> card.setBackgroundColor(Color.parseColor("#FFCCCC"))
-            "Media" -> card.setBackgroundColor(Color.parseColor("#FFFFCC"))
-            else -> card.setBackgroundColor(Color.parseColor("#CCFFCC"))
+            when (lista.prioridad) {
+                "Alta" -> setBackgroundColor(Color.parseColor("#FFCCCC"))
+                "Media" -> setBackgroundColor(Color.parseColor("#FFFFCC"))
+                else -> setBackgroundColor(Color.parseColor("#CCFFCC"))
+            }
         }
 
-        val textViewNombre = TextView(this)
-        textViewNombre.text = lista.nombre
-        textViewNombre.textSize = 14f
-        textViewNombre.gravity = Gravity.CENTER
-        textViewNombre.setTextColor(Color.BLACK)
-        card.addView(textViewNombre)
+        card.addView(TextView(this).apply {
+            text = lista.nombre
+            textSize = 14f
+            gravity = Gravity.CENTER
+            setTextColor(Color.BLACK)
+        })
 
         lista.productos.take(3).forEach { producto ->
-            val tv = TextView(this)
-            tv.text = "• $producto"
-            tv.textSize = 12f
-            card.addView(tv)
+            card.addView(TextView(this).apply {
+                text = "• $producto"
+                textSize = 12f
+            })
         }
 
         if (lista.productos.size > 3) {
-            val tv = TextView(this)
-            tv.text = "..."
-            tv.textSize = 12f
-            card.addView(tv)
+            card.addView(TextView(this).apply {
+                text = "..."
+                textSize = 12f
+            })
         }
 
         card.setOnClickListener {
-            val intent = Intent(this, VerListaActivity::class.java)
-            intent.putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
-            startActivity(intent)
+            startActivity(
+                Intent(this, VerListaActivity::class.java)
+                    .putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
+            )
         }
 
         return card

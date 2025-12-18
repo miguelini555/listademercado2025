@@ -5,13 +5,20 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
-import android.widget.*
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.CheckBox
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.andevmarketlist.databinding.ActivityVerListaBinding
 import com.example.andevmarketlist.dataclases.ListaApp
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 class VerListaActivity : AppCompatActivity() {
@@ -20,6 +27,7 @@ class VerListaActivity : AppCompatActivity() {
         const val EXTRA_LISTA_ID = "ID_LISTA"
     }
 
+    private lateinit var binding: ActivityVerListaBinding
     private lateinit var listaActual: ListaApp
     private lateinit var sharedPreferences: SharedPreferences
     private val checkboxesProductos = mutableListOf<CheckBox>()
@@ -27,7 +35,9 @@ class VerListaActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_ver_lista)
+
+        binding = ActivityVerListaBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences(
             pantalla_menu.NOMBRE_FICHERO_SHARED_PREFERENCES,
@@ -35,7 +45,6 @@ class VerListaActivity : AppCompatActivity() {
         )
 
         val listaId = intent.getStringExtra(EXTRA_LISTA_ID)
-
         if (listaId == null) {
             Toast.makeText(this, "Error: Lista no encontrada", Toast.LENGTH_SHORT).show()
             finish()
@@ -43,7 +52,6 @@ class VerListaActivity : AppCompatActivity() {
         }
 
         val lista = buscarListaPorId(listaId)
-
         if (lista == null) {
             Toast.makeText(this, "Lista no encontrada", Toast.LENGTH_SHORT).show()
             finish()
@@ -52,21 +60,21 @@ class VerListaActivity : AppCompatActivity() {
 
         listaActual = lista
 
-        configurarInterfaz(lista)
-
+        configurarInterfaz()
         configurarCheckboxListaCompletada()
-
         configurarBotonEliminarLista()
-
         configurarBotonGuardarCambios()
-
         configurarAgregarProducto()
-
         configurarBotonesNavegacion()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
             insets
         }
     }
@@ -75,167 +83,121 @@ class VerListaActivity : AppCompatActivity() {
         val stringGuardado = sharedPreferences.getString(
             pantalla_menu.NOMBRE_DATO_LISTAS,
             "[]"
-        )
+        ) ?: return null
 
-        return if (stringGuardado != null) {
-            try {
-                val listas = Json.decodeFromString<List<ListaApp>>(stringGuardado)
-                listas.find { it.id == id }
-            } catch (e: Exception) {
-                null
-            }
-        } else {
+        return try {
+            val listas = Json.decodeFromString<List<ListaApp>>(stringGuardado)
+            listas.find { it.id == id }
+        } catch (e: Exception) {
             null
         }
     }
 
-    private fun configurarInterfaz(lista: ListaApp) {
-        val textViewTitulo = findViewById<TextView>(R.id.textViewTituloLista)
-        textViewTitulo.text = lista.nombre
+    private fun configurarInterfaz() {
+        binding.textViewTituloLista.text = listaActual.nombre
+        binding.textViewPrioridad.text = "Prioridad: ${listaActual.prioridad}"
+        binding.textViewFechaCreacion.text = "Creada: ${listaActual.fechaCreacion}"
 
-        val textViewFechaLimite = findViewById<TextView>(R.id.textViewFechaLimite)
-        if (lista.fechaLimite != null) {
-            textViewFechaLimite.text = "Fecha límite: ${lista.fechaLimite}"
-        } else {
-            textViewFechaLimite.text = "Sin fecha límite"
-        }
-
-        val textViewPrioridad = findViewById<TextView>(R.id.textViewPrioridad)
-        textViewPrioridad.text = "Prioridad: ${lista.prioridad}"
-
-        val textViewFechaCreacion = findViewById<TextView>(R.id.textViewFechaCreacion)
-        textViewFechaCreacion.text = "Creada: ${lista.fechaCreacion}"
+        binding.textViewFechaLimite.text =
+            listaActual.fechaLimite?.let { "Fecha límite: $it" } ?: "Sin fecha límite"
 
         mostrarProductos()
     }
 
     private fun mostrarProductos() {
-        val linearLayoutProductos = findViewById<LinearLayout>(R.id.linearLayoutProductos)
-        linearLayoutProductos.removeAllViews()
+        binding.linearLayoutProductos.removeAllViews()
         checkboxesProductos.clear()
 
         if (listaActual.productos.isEmpty()) {
-            val tvVacio = TextView(this).apply {
+            val tv = TextView(this).apply {
                 text = "No hay productos en esta lista"
                 textSize = 16f
                 gravity = Gravity.CENTER
                 setTextColor(Color.GRAY)
                 setPadding(0, 40, 0, 0)
             }
-            linearLayoutProductos.addView(tvVacio)
-        } else {
-            listaActual.productos.forEachIndexed { index, producto ->
-                val productoLayout = LinearLayout(this).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    gravity = Gravity.CENTER_VERTICAL
-                    setPadding(25, 12, 25, 12)
+            binding.linearLayoutProductos.addView(tv)
+            return
+        }
 
-                    if (index % 2 == 0) {
-                        setBackgroundColor(Color.parseColor("#F5F5F5"))
-                    } else {
-                        setBackgroundColor(Color.WHITE)
-                    }
-                }
-
-                val checkBoxProducto = CheckBox(this).apply {
-                    text = producto
-                    textSize = 16f
-                    setTextColor(Color.BLACK)
-                    layoutParams = LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1f
-                    )
-
-                    if (listaActual.completada) {
-                        isChecked = true
-                    }
-                }
-
-                checkboxesProductos.add(checkBoxProducto)
-
-                productoLayout.addView(checkBoxProducto)
-
-                linearLayoutProductos.addView(productoLayout)
+        listaActual.productos.forEachIndexed { index, producto ->
+            val fila = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(25, 12, 25, 12)
+                setBackgroundColor(
+                    if (index % 2 == 0) Color.parseColor("#F5F5F5") else Color.WHITE
+                )
             }
+
+            val checkBox = CheckBox(this).apply {
+                text = producto
+                textSize = 16f
+                setTextColor(Color.BLACK)
+                layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+                isChecked = listaActual.completada
+            }
+
+            checkboxesProductos.add(checkBox)
+            fila.addView(checkBox)
+            binding.linearLayoutProductos.addView(fila)
         }
     }
 
     private fun configurarCheckboxListaCompletada() {
-        val checkBoxListaCompletada = findViewById<CheckBox>(R.id.checkBoxListaCompletada)
+        binding.checkBoxListaCompletada.isChecked = listaActual.completada
+        actualizarTextoCheckboxLista()
 
-        checkBoxListaCompletada.isChecked = listaActual.completada
-
-        actualizarTextoCheckboxLista(checkBoxListaCompletada)
-
-        checkBoxListaCompletada.setOnCheckedChangeListener { _, isChecked ->
+        binding.checkBoxListaCompletada.setOnCheckedChangeListener { _, isChecked ->
             listaActual = listaActual.copy(completada = isChecked)
-
-            actualizarTextoCheckboxLista(checkBoxListaCompletada)
-
-            if (isChecked) {
-                checkboxesProductos.forEach { checkbox ->
-                    checkbox.isChecked = true
-                }
-            } else {
-                checkboxesProductos.forEach { checkbox ->
-                    checkbox.isChecked = false
-                }
-            }
-
+            actualizarTextoCheckboxLista()
+            checkboxesProductos.forEach { it.isChecked = isChecked }
         }
     }
 
     private fun configurarBotonEliminarLista() {
-        val botonEliminar = findViewById<Button>(R.id.botonEliminarLista)
-
-        botonEliminar.setOnClickListener {
+        binding.botonEliminarLista.setOnClickListener {
             eliminarLista()
         }
     }
 
     private fun configurarBotonGuardarCambios() {
-        val botonGuardar = findViewById<Button>(R.id.botonGuardarCambios)
-
-        botonGuardar.setOnClickListener {
+        binding.botonGuardarCambios.setOnClickListener {
             guardarCambiosLista()
             Toast.makeText(this, "Cambios guardados", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun configurarAgregarProducto() {
-        val editTextNuevoProducto = findViewById<EditText>(R.id.editTextNuevoProducto)
-        val botonAgregar = findViewById<Button>(R.id.botonAgregarProducto)
-
-        botonAgregar.setOnClickListener {
-            val nuevoProducto = editTextNuevoProducto.text.toString().trim()
-
+        binding.botonAgregarProducto.setOnClickListener {
+            val nuevoProducto = binding.editTextNuevoProducto.text.toString().trim()
             if (nuevoProducto.isEmpty()) {
                 Toast.makeText(this, "Escribe un producto", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val productosActualizados = listaActual.productos.toMutableList()
-            productosActualizados.add(nuevoProducto)
-            listaActual = listaActual.copy(productos = productosActualizados)
+            listaActual = listaActual.copy(
+                productos = listaActual.productos + nuevoProducto
+            )
 
-            editTextNuevoProducto.text.clear()
-
+            binding.editTextNuevoProducto.text.clear()
             mostrarProductos()
 
-            val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(editTextNuevoProducto.windowToken, 0)
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(binding.editTextNuevoProducto.windowToken, 0)
 
             Toast.makeText(this, "Producto añadido", Toast.LENGTH_SHORT).show()
         }
 
-        editTextNuevoProducto.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
-                botonAgregar.performClick()
+        binding.editTextNuevoProducto.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                binding.botonAgregarProducto.performClick()
                 true
-            } else {
-                false
-            }
+            } else false
         }
     }
 
@@ -243,26 +205,24 @@ class VerListaActivity : AppCompatActivity() {
         val stringGuardado = sharedPreferences.getString(
             pantalla_menu.NOMBRE_DATO_LISTAS,
             "[]"
-        )
+        ) ?: return
 
-        if (stringGuardado != null) {
-            try {
-                val todasListas = Json.decodeFromString<List<ListaApp>>(stringGuardado)
+        try {
+            val listas = Json.decodeFromString<List<ListaApp>>(stringGuardado)
+            val nuevasListas = listas.filter { it.id != listaActual.id }
 
-                val listasActualizadas = todasListas.filter { it.id != listaActual.id }
+            sharedPreferences.edit()
+                .putString(
+                    pantalla_menu.NOMBRE_DATO_LISTAS,
+                    Json.encodeToString(nuevasListas)
+                )
+                .apply()
 
-                val editor = sharedPreferences.edit()
-                val listaString = Json.encodeToString(listasActualizadas)
-                editor.putString(pantalla_menu.NOMBRE_DATO_LISTAS, listaString)
-                editor.apply()
+            Toast.makeText(this, "Lista eliminada", Toast.LENGTH_SHORT).show()
+            finish()
 
-                Toast.makeText(this, "Lista eliminada", Toast.LENGTH_SHORT).show()
-
-                finish()
-
-            } catch (e: Exception) {
-                Toast.makeText(this, "Error al eliminar lista", Toast.LENGTH_SHORT).show()
-            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error al eliminar lista", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -270,58 +230,45 @@ class VerListaActivity : AppCompatActivity() {
         val stringGuardado = sharedPreferences.getString(
             pantalla_menu.NOMBRE_DATO_LISTAS,
             "[]"
-        )
+        ) ?: return
 
-        if (stringGuardado != null) {
-            try {
-                val todasListas = Json.decodeFromString<List<ListaApp>>(stringGuardado)
-
-                val listasActualizadas = todasListas.map { lista ->
-                    if (lista.id == listaActual.id) {
-                        listaActual
-                    } else {
-                        lista
-                    }
-                }
-
-                val editor = sharedPreferences.edit()
-                val listaString = Json.encodeToString(listasActualizadas)
-                editor.putString(pantalla_menu.NOMBRE_DATO_LISTAS, listaString)
-                editor.apply()
-
-            } catch (e: Exception) {
-                Toast.makeText(this, "Error al guardar cambios: ${e.message}", Toast.LENGTH_SHORT).show()
+        try {
+            val listas = Json.decodeFromString<List<ListaApp>>(stringGuardado)
+            val nuevasListas = listas.map {
+                if (it.id == listaActual.id) listaActual else it
             }
+
+            sharedPreferences.edit()
+                .putString(
+                    pantalla_menu.NOMBRE_DATO_LISTAS,
+                    Json.encodeToString(nuevasListas)
+                )
+                .apply()
+
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error al guardar cambios", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun actualizarTextoCheckboxLista(checkBox: CheckBox) {
-        val texto = if (listaActual.completada) {
-            "Lista completada"
-        } else {
-            "Marcar lista como completada"
-        }
-        checkBox.text = texto
+    private fun actualizarTextoCheckboxLista() {
+        binding.checkBoxListaCompletada.text =
+            if (listaActual.completada)
+                "Lista completada"
+            else
+                "Marcar lista como completada"
     }
 
     private fun configurarBotonesNavegacion() {
-        val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
-        val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
-        val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
-
-        botonCalendario.setOnClickListener {
-            val intent = Intent(this, activity_Calendario::class.java)
-            startActivity(intent)
+        binding.botonCalendario.setOnClickListener {
+            startActivity(Intent(this, activity_Calendario::class.java))
         }
 
-        botonInicio.setOnClickListener {
-            val intent = Intent(this, pantalla_menu::class.java)
-            startActivity(intent)
+        binding.botonInicio.setOnClickListener {
+            startActivity(Intent(this, pantalla_menu::class.java))
         }
 
-        botonAlarma.setOnClickListener {
-            val intent = Intent(this, HistorialActivity::class.java)
-            startActivity(intent)
+        binding.botonAlarma.setOnClickListener {
+            startActivity(Intent(this, HistorialActivity::class.java))
         }
     }
 }

@@ -6,11 +6,13 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.andevmarketlist.databinding.ActivityCalendarioBinding
 import com.example.andevmarketlist.dataclases.ListaApp
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -19,12 +21,15 @@ import java.util.*
 
 class activity_Calendario : AppCompatActivity() {
 
+    private lateinit var binding: ActivityCalendarioBinding
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_calendario)
+
+        binding = ActivityCalendarioBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences(
             pantalla_menu.NOMBRE_FICHERO_SHARED_PREFERENCES,
@@ -32,10 +37,9 @@ class activity_Calendario : AppCompatActivity() {
         )
 
         configurarBotonesNavegacion()
-
         cargarCalendario()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -43,88 +47,72 @@ class activity_Calendario : AppCompatActivity() {
     }
 
     private fun obtenerTodasListas(): List<ListaApp> {
-        val stringGuardado: String? = sharedPreferences.getString(
+        val stringGuardado = sharedPreferences.getString(
             pantalla_menu.NOMBRE_DATO_LISTAS,
             "[]"
         )
 
-        return if (stringGuardado != null) {
-            try {
-                Json.decodeFromString<List<ListaApp>>(stringGuardado)
-            } catch (e: Exception) {
-                emptyList()
-            }
-        } else {
+        return try {
+            Json.decodeFromString(stringGuardado ?: "[]")
+        } catch (e: Exception) {
             emptyList()
         }
     }
 
     private fun cargarCalendario() {
-        val contenedorCalendario = findViewById<LinearLayout>(R.id.linearLayoutContenedor)
-        val textViewMensajeVacio = findViewById<TextView>(R.id.textViewMensajeVacio)
+        val contenedorCalendario = binding.linearLayoutContenedor
+        val textViewMensajeVacio = binding.textViewMensajeVacio
 
         for (i in contenedorCalendario.childCount - 1 downTo 1) {
             val child = contenedorCalendario.getChildAt(i)
-            if (child.id != R.id.textViewMensajeVacio) {
+            if (child.id != textViewMensajeVacio.id) {
                 contenedorCalendario.removeViewAt(i)
             }
         }
 
         val todasListas = obtenerTodasListas()
-            .filter { !it.completada }
-            .filter { it.fechaLimite != null }
+            .filter { !it.completada && it.fechaLimite != null }
 
         if (todasListas.isEmpty()) {
             textViewMensajeVacio.visibility = View.VISIBLE
-            textViewMensajeVacio.text = "No hay listas con fecha límite"
+            textViewMensajeVacio.text = getString(R.string.no_hay_listas_fecha)
             return
         }
 
         textViewMensajeVacio.visibility = View.GONE
 
         val listasPorFecha = mutableMapOf<String, MutableList<ListaApp>>()
-
         val formatoSalida = SimpleDateFormat("EEEE d 'de' MMMM", Locale("es", "ES"))
-
         val formatoEntrada = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
         todasListas.forEach { lista ->
             try {
                 val fechaLista = formatoEntrada.parse(lista.fechaLimite!!)
-                val fechaKey = formatoSalida.format(fechaLista)
-
-                if (!listasPorFecha.containsKey(fechaKey)) {
-                    listasPorFecha[fechaKey] = mutableListOf()
-                }
-                listasPorFecha[fechaKey]?.add(lista)
-            } catch (e: Exception) {
-            }
+                val fechaKey = formatoSalida.format(fechaLista!!)
+                listasPorFecha.getOrPut(fechaKey) { mutableListOf() }.add(lista)
+            } catch (_: Exception) {}
         }
 
-        val fechasOrdenadas = listasPorFecha.keys.sortedBy { fecha ->
+        val fechasOrdenadas = listasPorFecha.keys.sortedBy {
             try {
-                formatoSalida.parse(fecha)?.time ?: Long.MAX_VALUE
-            } catch (e: Exception) {
+                formatoSalida.parse(it)?.time ?: Long.MAX_VALUE
+            } catch (_: Exception) {
                 Long.MAX_VALUE
             }
         }
 
-        fechasOrdenadas.forEachIndexed { index, fecha ->
-            val listas = listasPorFecha[fecha] ?: emptyList()
+        fechasOrdenadas.forEach { fecha ->
+            val listas = listasPorFecha[fecha].orEmpty()
 
             val colorFondo = when {
                 fecha == formatoSalida.format(Date()) -> Color.parseColor("#FFE0E0")
-                fecha == formatoSalida.format(Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time) ->
-                    Color.parseColor("#FFF0E0")
+                fecha == formatoSalida.format(
+                    Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time
+                ) -> Color.parseColor("#FFF0E0")
                 else -> Color.parseColor("#F0F0F0")
             }
 
-            crearSeccionFecha(
-                contenedorCalendario,
-                fecha,
-                listas,
-                colorFondo
-            )
+            crearSeccionFecha(contenedorCalendario, fecha, listas, colorFondo)
         }
     }
 
@@ -134,77 +122,74 @@ class activity_Calendario : AppCompatActivity() {
         listas: List<ListaApp>,
         colorFondo: Int
     ) {
-        val seccion = LinearLayout(this)
-        seccion.orientation = LinearLayout.VERTICAL
-        seccion.setPadding(20, 20, 20, 20)
-        seccion.setBackgroundColor(colorFondo)
+        val seccion = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(20, 20, 20, 20)
+            setBackgroundColor(colorFondo)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 0, 0, 16)
+            }
+        }
 
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.setMargins(0, 0, 0, 16)
-        seccion.layoutParams = params
-
-        val textViewFecha = TextView(this)
-        textViewFecha.text = fecha
-        textViewFecha.textSize = 18f
-        textViewFecha.setTextColor(Color.BLACK)
-        textViewFecha.setTypeface(null, android.graphics.Typeface.BOLD)
-        textViewFecha.setPadding(0, 0, 0, 12)
+        val textViewFecha = TextView(this).apply {
+            text = fecha
+            textSize = 18f
+            setTextColor(Color.BLACK)
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setPadding(0, 0, 0, 12)
+        }
         seccion.addView(textViewFecha)
 
         if (listas.isEmpty()) {
-            val textViewVacio = TextView(this)
-            textViewVacio.text = "Sin listas"
-            textViewVacio.textSize = 16f
-            textViewVacio.setTextColor(Color.GRAY)
-            textViewVacio.setPadding(20, 0, 0, 0)
-            seccion.addView(textViewVacio)
+            seccion.addView(TextView(this).apply {
+                text = getString(R.string.sin_listas)
+                textSize = 16f
+                setTextColor(Color.GRAY)
+                setPadding(20, 0, 0, 0)
+            })
         } else {
             listas.forEach { lista ->
-                val itemLayout = LinearLayout(this)
-                itemLayout.orientation = LinearLayout.HORIZONTAL
-                itemLayout.gravity = Gravity.CENTER_VERTICAL
-                itemLayout.setPadding(20, 8, 0, 8)
-
-                val punto = TextView(this)
-                punto.text = "•"
-                punto.textSize = 16f
-                punto.setPadding(0, 0, 12, 0)
-                itemLayout.addView(punto)
-
-                val textViewLista = TextView(this)
-                textViewLista.text = lista.nombre
-                textViewLista.textSize = 16f
-                textViewLista.setTextColor(Color.BLACK)
-                textViewLista.layoutParams = LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
-
-                textViewLista.setOnClickListener {
-                    val intent = Intent(this, VerListaActivity::class.java)
-                    intent.putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
-                    startActivity(intent)
+                val itemLayout = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    setPadding(20, 8, 0, 8)
                 }
 
-                textViewLista.paintFlags = textViewLista.paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
+                itemLayout.addView(TextView(this).apply {
+                    text = "•"
+                    textSize = 16f
+                    setPadding(0, 0, 12, 0)
+                })
 
+                val textViewLista = TextView(this).apply {
+                    text = lista.nombre
+                    textSize = 16f
+                    setTextColor(Color.BLACK)
+                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                    paintFlags = paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
+                    setOnClickListener {
+                        startActivity(
+                            Intent(this@activity_Calendario, VerListaActivity::class.java)
+                                .putExtra(VerListaActivity.EXTRA_LISTA_ID, lista.id)
+                        )
+                    }
+                }
                 itemLayout.addView(textViewLista)
 
-                val textViewPrioridad = TextView(this)
-                textViewPrioridad.text = " (${lista.prioridad})"
-                textViewPrioridad.textSize = 14f
-                textViewPrioridad.setTextColor(
-                    when (lista.prioridad) {
-                        "Alta" -> Color.RED
-                        "Media" -> Color.parseColor("#FF9800")
-                        else -> Color.parseColor("#4CAF50")
-                    }
-                )
-                itemLayout.addView(textViewPrioridad)
+                itemLayout.addView(TextView(this).apply {
+                    text = " (${lista.prioridad})"
+                    textSize = 14f
+                    setTextColor(
+                        when (lista.prioridad) {
+                            "Alta" -> Color.RED
+                            "Media" -> Color.parseColor("#FF9800")
+                            else -> Color.parseColor("#4CAF50")
+                        }
+                    )
+                })
 
                 seccion.addView(itemLayout)
             }
@@ -214,18 +199,12 @@ class activity_Calendario : AppCompatActivity() {
     }
 
     private fun configurarBotonesNavegacion() {
-        val botonCalendario = findViewById<ImageButton>(R.id.botonCalendario)
-        val botonInicio = findViewById<ImageButton>(R.id.botonInicio)
-        val botonAlarma = findViewById<ImageButton>(R.id.botonAlarma)
-
-        botonInicio.setOnClickListener {
-            val intent = Intent(this, pantalla_menu::class.java)
-            startActivity(intent)
+        binding.botonInicio.setOnClickListener {
+            startActivity(Intent(this, pantalla_menu::class.java))
         }
 
-        botonAlarma.setOnClickListener {
-            val intent = Intent(this, HistorialActivity::class.java)
-            startActivity(intent)
+        binding.botonAlarma.setOnClickListener {
+            startActivity(Intent(this, HistorialActivity::class.java))
         }
     }
 
