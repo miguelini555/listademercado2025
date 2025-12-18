@@ -263,6 +263,7 @@ class VerListaActivity : AppCompatActivity() {
             startActivity(Intent(this, activity_Calendario::class.java))
         }
 
+
         binding.botonInicio.setOnClickListener {
             startActivity(Intent(this, pantalla_menu::class.java))
         }
